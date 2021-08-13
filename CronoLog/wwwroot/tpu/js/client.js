@@ -1,11 +1,6 @@
 /* global TrelloPowerUp */
 var Promise = TrelloPowerUp.Promise;
 
-const BLACK_ROCKET_ICON = 'https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Frocket-ship.png?1494946700421';
-const GRAY_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-gray.svg';
-
-// const API_URL = "https://trello-timer.herokuapp.com/";
-
 TrelloPowerUp.initialize({
     "board-buttons": InitBoardButtons,
     'card-buttons': InitCardButtons,
@@ -24,13 +19,18 @@ TrelloPowerUp.initialize({
         }
 
         //CardBadgeInfo -- remoção temporaria
-        let cardBadgeInfoResponse = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: 'GET',
-        });
+        let cardBadgeInfoResponse;
+        try {
+            cardBadgeInfoResponse = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'GET',
+            });
+        } catch (error) {
+        }
+
         let cardBadge = [];
         if (cardBadgeInfoResponse.status !== 404) {
             let cardBadgeInfo = await cardBadgeInfoResponse.json();

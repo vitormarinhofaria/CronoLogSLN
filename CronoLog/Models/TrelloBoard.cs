@@ -10,7 +10,8 @@ namespace CronoLog.Models
         private List<string> cards = new();
         public List<TrelloMember> Members { get => members; set => members = value; }
         private List<TrelloMember> members = new();
-        public string StopwatchList { get; set; }
+        public string StopwatchList { get => stopWatchList.ToLower(); set => stopWatchList = value; }
+        private string stopWatchList;
         public TrelloBoard(string id, string name)
         {
             Id = id;

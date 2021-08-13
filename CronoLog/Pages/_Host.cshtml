@@ -46,7 +46,7 @@
             getMarkdown()
         }
         async function getMarkdown() {
-            var mdr = await fetch("https://localhost:5001/tpu/content/tutorial.md");
+            var mdr = await fetch("https://trellotemporizador.herokuapp.com/tpu/content/tutorial.md");
             var mdt = await mdr.text()
             var reader = new commonmark.Parser()
             var parsed = reader.parse(mdt)

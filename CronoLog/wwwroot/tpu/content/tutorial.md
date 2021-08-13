@@ -6,7 +6,7 @@
     - Área de trabalho       
         - Selecione a area de trabalho em que o power-up será utilizado
     - URL de conector Iframe
-        - ###### https://trellotemporizador.herokuapp.com/tpu/
+        - ###### https://trellotemporizador.herokuapp.com/tpu/index.html
 
 
 - Acesse a parte de *Recursos* no menu esquerdo

@@ -47,13 +47,6 @@ namespace CronoLog
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/files"), first =>
-            {
-                first.UseDefaultFiles();
-                first.UseStaticFiles();
-
-            });
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -65,11 +58,11 @@ namespace CronoLog
                 app.UseHsts();
             }
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseDefaultFiles();
             app.UseRouting();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

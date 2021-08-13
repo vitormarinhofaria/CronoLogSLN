@@ -1,7 +1,7 @@
-// const TRELLO_TIMER = { API_URL: "https://trellotemporizador.herokuapp.com" }
-// const CRONO_LOG_CDN = "https://trellotemporizador.herokuapp.com"
-const TRELLO_TIMER = { API_URL: "https://trello-timer.herokuapp.com" }
-const CRONO_LOG_CDN = "https://trello-timer.herokuapp.com"
+const TRELLO_TIMER = { API_URL: "https://trellotemporizador.herokuapp.com" }
+const CRONO_LOG_CDN = "https://trellotemporizador.herokuapp.com"
+// const TRELLO_TIMER = { API_URL: "https://trello-timer.herokuapp.com" }
+// const CRONO_LOG_CDN = "https://trello-timer.herokuapp.com"
 
 const Icons = {
     info: CRONO_LOG_CDN + "/tpu/content/info.svg",
