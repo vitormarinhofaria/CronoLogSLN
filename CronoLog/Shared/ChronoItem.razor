@@ -1,0 +1,86 @@
+﻿@inject IJSRuntime js;
+@inject HttpClient httpC;
+@using CronoLog.Shared
+
+<EditForm Model="@updateRequest" class="w-100 justify-content-center align-items-center d-flex">
+    <div class="cColumn justify-content-center nChrono align-items-center text-center w-75">
+        <div class="cRow w-100 justify-content-between">
+            <div class="cRow justify-content-end align-items-center ml-1 mr-2" @onclick="(e) => {
+                                                                                             isEditMode = (isEditMode == true) ? false : true;
+                                                                                             Console.WriteLine(isEditMode);
+                                                                                             FirstClick = false;
+                                                                                             StateHasChanged();
+                                                                                         }">
+                <span class="oi oi-menu hoverable" />
+            </div>
+
+            <div class="cRow justify-content-center align-items-center">
+                <label class="m-0 mr-2">Inicio:</label>
+                <InputDateTime id="createdDate" class="form-control" @bind-Value="updateRequest.Start" />
+            </div>
+
+            <div class="cRow justify-content-center align-items-center">
+                <label class="m-0 mr-2">Término:</label>
+                @if (Chrono.State == TimeState.RUNNING)
+                {
+                    <div class="m-0" style="width: 216px">
+                        Em Produção
+                    </div>
+                }
+                else
+                {
+                    <InputDateTime id="endDate" class="form-control" @bind-Value="updateRequest.End" />
+                }
+            </div>
+            @if (Chrono.State != TimeState.RUNNING)
+            {
+                <div class="cRow text-center align-items-center">
+                    <div class="mr-2 ml-2">
+                        Total: @DateUtils.HoursDuration(updateRequest.End - updateRequest.Start)
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div style="width: 116px"></div>
+            }
+        </div>
+        @if (isEditMode)
+        {
+            var m = Chrono.StartMember;
+            <div class="cRow w-100 justify-content-around align-items-center mt-3 border-top border-dark pt-2">
+                <div class="cRow justify-content-between align-items-center">
+                    <label for="member" class="m-0 mr-2">Membro:</label>
+                    <InputSelect @bind-Value="@updateRequest.MemberId">
+                        @foreach (var member in Members)
+                            {
+                            <option value=@member.Id>@member.Name</option>
+                            }
+                    </InputSelect>
+                </div>
+
+                <div class="cRow">
+                    <button class="btn nBtnDanger m-1" @onclick="(e) => requestHiddenConfirmation = true">Excluir</button>
+                    @if (requestHiddenConfirmation)
+                    {
+                        <div>
+                            <button class="btn nBtnWarn m-1" @onclick="(e) => DeleteChrono_()">
+                                Confirmar Exclusão
+                            </button>
+                            <button class="btn nBtnInfo m-1" @onclick="(e) => requestHiddenConfirmation = false">
+                                Cancelar Exclusão
+                            </button>
+                        </div>
+                    }
+                    <button class="btn nBtnSave m-1" @onclick="(e) => SaveBtn_()">
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</EditForm>
+
+@code {
+    
+}

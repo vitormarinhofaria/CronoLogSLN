@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Badge</title>
+    <style>
+        .flex {
+            display: flex;
+        }
+
+        .col {
+            flex-direction: column;
+        }
+
+        .row {
+            flex-direction: row;
+        }
+
+        .pd-1 {
+            padding: 1px;
+        }
+
+        .pd-2 {
+            padding: 2px;
+        }
+
+        .pd-3 {
+            padding: 3px;
+        }
+
+        .pd-r-1 {
+            padding-right: 1px;
+        }
+
+        .pd-r-2 {
+            padding-right: 2px;
+        }
+
+        .pd-r-3 {
+            padding-right: 3px;
+        }
+
+        .pd-l-1 {
+            padding-left: 1px;
+        }
+
+        .pd-l-2 {
+            padding-left: 2px;
+        }
+
+        .pd-l-3 {
+            padding-left: 3px;
+        }
+
+        .pd-t-1 {
+            padding-top: 1px;
+        }
+
+        .pd-t-2 {
+            padding-top: 2px;
+        }
+
+        .pd-t-3 {
+            padding-top: 3px;
+        }
+
+        .pd-b-1 {
+            padding-bottom: 1px;
+        }
+
+        .pd-b-2 {
+            padding-bottom: 2px;
+        }
+
+        .pd-b-3 {
+            padding-bottom: 3px;
+        }
+
+        .main-center {
+            justify-content: center;
+        }
+
+        .cross-center {
+            align-items: center;
+        }
+        img:hover{
+            cursor: pointer;
+        }
+        html{
+            font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Droid Sans,Helvetica Neue,sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="./js/global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <div id="app" class="flex col main-center cross-center">
+        <div v-for="(d, index) in descriptions" class="flex row main-center cross-center pd-3">
+            <input v-model="d" v-on:keyup="(e) => descriptions[index] = e.target.value">
+            <a v-on:click="(e) => deleteInfo(d)">
+                <img src="content/delete-forever.svg">
+            </a>
+        </div>
+        <div>
+            <a v-on:click="(e) => newInfo()">
+                <img src="content/plus.svg">
+            </a>
+            <a v-on:click="(e) => saveInfo()">
+                <img src="content/check.svg">
+            </a>
+        </div>
+    </div>
+    <script>
+        async function main() {
+            let t = window.TrelloPowerUp.iframe();
+            let card = await t.card('id', 'name');
+            let cardBadgeInfoResponse = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Allow-Cross-Origin': '*'
+                },
+                method: 'GET',
+            });
+            let descriptions = [""];
+            if (cardBadgeInfoResponse.status !== 404) {
+                let cardBadgeInfo = await cardBadgeInfoResponse.json();
+                descriptions = cardBadgeInfo.descriptions;
+            }
+
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    descriptions
+                },
+                methods: {
+                    saveInfo: async function () {
+                        console.log(descriptions);
+                        let response = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            method: 'PUT',
+                            body: JSON.stringify(descriptions)
+                        });
+                        await t.set('card', 'shared', 'shouldUpdate', true);
+                        alert("Alterações salvas");
+                    },
+                    deleteInfo: async function (info) {
+                        let index = descriptions.findIndex((v) => v === info);
+
+                        if (index !== -1) {
+                            descriptions.splice(index, 1)
+                        }
+                        console.log(descriptions)
+                        await t.set('card', 'shared', 'shouldUpdate', true);
+                    },
+                    newInfo: function () {
+                        descriptions.push("")
+                    }
+                }
+            })
+        }
+        main();
+    </script>
+</body>
+
+</html>

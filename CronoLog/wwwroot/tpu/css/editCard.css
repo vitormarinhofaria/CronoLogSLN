@@ -1,0 +1,84 @@
+.timerNode {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid gray;
+}
+
+.nodeBase {
+    padding: 1px;
+    margin: 1px;
+}
+
+.dateDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+.txtDateInput {
+    font-size: medium;
+    width: 80px;
+    height: min-content;
+    border: 0;
+}
+
+.timeStatus {
+    /* border: 2px; */
+    border-radius: 20%;
+    width: 10px;
+    height: 30px;
+}
+
+.timeStatus.running {
+    border-color: #0079bf;
+    background-color: #0079bf;
+}
+
+.timeStatus.stopped {
+    border-color: #eb5a46;
+    background-color: #eb5a46;
+}
+
+.timeStatus.paused {
+    border-color: #ff9f1a;
+    background-color: #ff9f1a;
+}
+
+.timeStatus.finalized {
+    border-color: #61bd4f;
+    background-color: #61bd4f;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.sucIcon {
+    filter: grayscale(100%);
+    transition: all linear 16ms;
+}
+
+.sucIcon:hover {
+    cursor: pointer;
+}
+
+.sucIcon.suc {
+    filter: none;
+    box-shadow: 0px 0px 8px 0px #61bd4f;
+    transition: all linear 16ms;
+}
+
+.sucIcon.fail {
+    filter: none;
+    box-shadow: 0px 0px 8px 0px rgb(201, 40, 40);
+    transition: all linear 16ms;
+}
+
+html, h3, h4{
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Droid Sans,Helvetica Neue,sans-serif;
+}

@@ -1,0 +1,235 @@
+﻿.intervalCard {
+    width: min-content;
+    margin: 0;
+    padding: 0;
+}
+
+.mainContainer {
+    padding: 4px 15px 4px 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.cColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.cRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.cWrap {
+    flex-wrap: wrap;
+}
+
+.cCard {
+    min-width: 230px;
+    height: max-content;
+}
+
+.cChrono {
+    border: 2px dashed gray;
+    border-radius: 3px;
+    padding: 4px;
+    margin: 3px;
+    width: min-content;
+    height: min-content;
+}
+
+.cBorderSelected {
+    border: 2px solid var(--blue);
+}
+
+.cBorderNotSelected {
+    border: 2px solid var(--gray);
+}
+
+.redContainer {
+    background-color: #ac1a1a;
+    color: #E2E2E2;
+}
+
+.cBackground {
+    background-color: #303030;
+    color: #E2E2E2;
+    min-height: 100vh;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.nCard {
+    display: flex;
+    min-height: 180px;
+    width: 410px;
+    margin: 20px;
+    padding: 0px;
+    box-shadow: 0px 0px 15px #151515;
+    transition: linear 200ms;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: #585858;
+}
+
+    .nCard.selected {
+        justify-content: space-between;
+        width: 65%;
+        grid-column: span 4;
+        transition: linear 120ms;
+        justify-self: center;
+    }
+
+.cCardRow.selected.noMember {
+    align-items: center;
+    transition: linear 200ms;
+}
+
+.nCard.selected.noMember {
+    justify-content: center;
+    align-items: center;
+    transition: linear 200ms;
+}
+
+.nCard:hover {
+    box-shadow: 0px 0px 10px dodgerblue;
+    transition: linear 120ms;
+}
+
+.nCard.selected:hover {
+    box-shadow: 0px 0px 10px dodgerblue;
+    transition: linear 120ms;
+}
+
+.nBorderSelected {
+    border: 2px solid rgb(55, 94, 133);
+    box-shadow: 0px 0px 5px dodgerblue;
+    border-radius: 15px;
+    background-color: #424242;
+    transition: linear 120ms;
+}
+
+.nBorderNotSelected {
+    border-radius: 15px;
+    transition: linear 130ms;
+    background-color: #424242
+}
+
+    .nBorderNotSelected:hover {
+        box-shadow: 0px 0px 5px dodgerblue;
+    }
+
+.nChrono {
+    background-color: #585858;
+    border-radius: 15px;
+    padding: 10px;
+    margin-top: 8px;
+    width: min-content;
+    height: min-content;
+}
+
+.cCardRow {
+    width: 100%;
+    justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+    .cCardRow.selected {
+        justify-content: space-between;
+        padding-left: 15px;
+    }
+
+.cCardGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.cCardGridC {
+    justify-content: center;
+}
+
+@media only screen and (max-width: 1780px) {
+    .cCardGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .nCard.selected {
+        justify-content: space-between;
+        width: 65%;
+        grid-column: span 3;
+        transition: linear 120ms;
+        justify-self: center;
+    }
+
+    .nChrono {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (max-width: 1330px) {
+    .cCardGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .nCard.selected {
+        justify-content: space-between;
+        width: 65%;
+        grid-column: span 2;
+        transition: linear 120ms;
+        justify-self: center;
+    }
+}
+
+.cChronoCol {
+    background-color: #424242;
+    padding: 8px;
+    border-radius: 0 0 15px 15px;
+}
+
+.nBtnInfo {
+    background-color: #909090
+}
+
+.nBtnWarn {
+    background-color: #ee2323;
+    color: #e2e2e2;
+}
+
+.nBtnDanger {
+    background-color: #ac1a1a;
+    color: #e2e2e2;
+}
+
+.nBtnSave {
+    background-color: #909090;
+}
+
+.btn:hover {
+    box-shadow: 0px 0px 8px dodgerblue;
+    transition: linear 120ms;
+    color: #e2e2e2
+}
+
+.nDownloadBtn {
+    background-color: #484848;
+    padding: 0 20px 0 20px;
+    border-radius: 20px;
+    transition: linear 120ms;
+}
+
+    .nDownloadBtn:hover {
+        box-shadow: 0px 0px 8px dodgerblue;
+        transition: linear 120ms;
+    }
+
+.hoverable:hover {
+    box-shadow: 0px 0px 15px dodgerblue;
+    transition: linear 120ms;
+}

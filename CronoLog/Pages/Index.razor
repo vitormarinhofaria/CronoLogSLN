@@ -1,0 +1,12 @@
+﻿@page "/"
+
+@inject IJSRuntime js
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsUtils.ShowMarkdown(js);
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

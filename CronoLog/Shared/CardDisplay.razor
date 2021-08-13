@@ -1,0 +1,38 @@
+﻿<div class=@styleName>
+    <div>
+        <h4>@Card.Name</h4>
+    </div>
+
+    <h5 style="width: max-content;">@TotalTime</h5>
+
+</div>
+
+@code
+{
+    [Parameter]
+    public bool Selected { get; set; }
+    [Parameter]
+    public TrelloCard Card { get; set; }
+    public string TotalTime { get; set; }
+    public string styleName { get; set; }
+    TimeSpan Duration { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (Selected == true)
+        {
+            styleName = "cColumn text-center justify-content-center pl-4";
+        }
+        else
+        {
+            styleName = "cColumn text-center justify-content-center align-items-center pl-4";
+        }
+        foreach (var timer in Card.Timers)
+        {
+            var end = (timer.State == TimeState.RUNNING) ? DateTime.UtcNow : timer.End;
+            var duration = end - timer.Start;
+            Duration += duration;
+        }
+        TotalTime = DateUtils.HoursDuration(Duration);
+        await base.OnInitializedAsync();
+    }
+}

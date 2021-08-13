@@ -1,0 +1,33 @@
+﻿
+<div class="cColumn p-2 justify-content-center text-center">
+    <div>
+        <h5>@Member.Name</h5>
+    </div>
+    <div>
+        <label>
+            @TotalTime
+        </label>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TrelloMember Member { get; set; }
+    [Parameter]
+    public List<CardTime> Timers { get; set; }
+
+    private TimeSpan Duration { get; set; }
+    private string TotalTime { get; set; }
+
+    protected override void OnInitialized()
+    {
+        foreach (var timer in Timers)
+        {
+            var end = (timer.State == TimeState.RUNNING) ? DateTime.UtcNow : timer.End;
+            var duration = end - timer.Start; ;
+            Duration += duration;
+        }
+        TotalTime = DateUtils.HoursDuration(Duration);
+        base.OnInitialized();
+    }
+}
