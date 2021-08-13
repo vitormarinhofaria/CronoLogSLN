@@ -4,6 +4,7 @@ using CronoLog.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,8 +78,17 @@ namespace CronoLog.Pages
             foreach (var card in cards)
             {
                 if (!card.CurrentList.Name.ToLower().Contains("geral") && !card.CurrentList.Name.ToLower().Contains("dúvidas") && !card.CurrentList.Name.ToLower().Contains("duvidas") && card.Active)
-                //if(true)
                 {
+                    foreach (var cTimer in card.Timers)
+                    {
+#if DEBUG
+                        cTimer.Start = TimeZoneInfo.ConvertTimeFromUtc(cTimer.Start, TimeZoneInfo.Local);
+                        cTimer.End = TimeZoneInfo.ConvertTimeFromUtc(cTimer.End, TimeZoneInfo.Local);
+#else
+                        cTimer.Start = TimeZoneInfo.ConvertTimeFromUtc(cTimer.Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+                        cTimer.End = TimeZoneInfo.ConvertTimeFromUtc(cTimer.End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+#endif
+                    }
                     cardsList.Add(card);
                 }
             }
