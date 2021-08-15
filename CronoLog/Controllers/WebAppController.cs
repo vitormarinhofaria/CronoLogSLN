@@ -111,8 +111,8 @@ namespace CronoLog.Controllers
                     }
                     else
                     {
-                        var utf8string = Encoding.UTF8.GetBytes("N\uc3a3o \uc3a9 permitido deletar Chronos que n\uc3a3o pertencem a voc\uc3aa");
-                        return new JsonResult("nptvc");
+                        //var utf8string = Encoding.UTF8.GetBytes("N\uc3a3o \uc3a9 permitido deletar Chronos que n\uc3a3o pertencem a voc\uc3aa");
+                        //return new JsonResult("nptvc");
                     }
                 }
                 else
