@@ -1,0 +1,2 @@
+MONGO_STRING // string de conexão com o banco de dados
+API_URL      // string da url de acesso externo
