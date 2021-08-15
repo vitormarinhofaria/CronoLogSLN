@@ -1,6 +1,8 @@
 ﻿using CronoLog.Models;
 using CronoLog.Utils;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System;
@@ -16,22 +18,19 @@ namespace CronoLog.Controllers
     [EnableCors("TrelloHostPolicy")]
     public class TimedController : ControllerBase
     {
-        private readonly MongoClient mDbClient;
-        private static readonly List<string> createdBoards = new();
-        public TimedController(MongoClient mongoClient)
+        public TimedController()
         {
-            mDbClient = mongoClient;
         }
 
-        public static async void SetEndTime(MongoClient client)
+        public static async void SetEndTime(MongoClient dbClient)
         {
-
             TimedController.NoSleep();
+
             bool running = true;
             DateTime doWhen = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 3, 10, 0);
             doWhen = doWhen.AddDays(1);
-            //DateTime doWhen = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute + 1, 0);
             Console.WriteLine($"Cartões em excecução serão pausados automaticamente em: {doWhen.ToLongDateString()} {doWhen.ToLongTimeString()} UTC");
+
             while (running)
             {
                 DateTime now = DateTime.Now;
@@ -39,9 +38,11 @@ namespace CronoLog.Controllers
 
                 await Task.Delay(countDown);
                 Console.WriteLine("Pausando cartões... ");
-                var cardsCollection = DatabaseUtils.CardsCollection(client);
-                var boardsCollection = DatabaseUtils.BoardsCollection(client);
+
+                var cardsCollection = DatabaseUtils.CardsCollection(dbClient);
+                var boardsCollection = DatabaseUtils.BoardsCollection(dbClient);
                 var cards = await cardsCollection.Find(Builders<TrelloCard>.Filter.Empty).ToListAsync();
+
                 foreach (var card in cards)
                 {
                     if (card.Timers.Count > 0)
@@ -76,11 +77,13 @@ namespace CronoLog.Controllers
             {
                 TimeSpan timeToWait = taskTime - DateTime.Now;
                 await Task.Delay(timeToWait);
+
                 var httpClient = new HttpClient();
-                Console.WriteLine("Fazendo chamada /timed/shake ...");
+                Console.WriteLine($"Fazendo chamada /timed/shake ... {taskTime.ToLongTimeString()}");
                 await httpClient.GetAsync(ApiUtils.API_URL + "/Timed/shake");
+
                 taskTime = taskTime.AddMinutes(20);
-                Console.WriteLine("Proxima chamada as " + taskTime.ToLongDateString());
+                Console.WriteLine($"Proxima chamada as {taskTime.ToLongTimeString()}");
             }
         }
 
