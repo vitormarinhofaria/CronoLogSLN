@@ -46,7 +46,7 @@
             getMarkdown()
         }
         async function getMarkdown() {
-            var mdr = await fetch("https://trellotemporizador.herokuapp.com/tpu/content/tutorial.md");
+            var mdr = await fetch('@Utils.ApiUtils.API_URL' + "/tpu/content/tutorial.md");
             var mdt = await mdr.text()
             var reader = new commonmark.Parser()
             var parsed = reader.parse(mdt)
@@ -55,35 +55,6 @@
             document.body.innerHTML = htmlString
         }
 
-        async function downloadFile(fileName) {
-            var response = await fetch("https://localhost:5001/" + "resumo.xlsx")
-            var b = await response.blob()
-
-            // Create "object URL" that is linked to the Blob object.
-            const url = URL.createObjectURL(b);
-
-            // Invoke download helper function that implemented in 
-            // the earlier section of this article.
-            const anchorElement = document.createElement('a');
-            anchorElement.href = url;
-            anchorElement.download = fileName;
-            anchorElement.click();
-            anchorElement.remove();
-
-            // At last, release unused resources.
-            URL.revokeObjectURL(url);
-
-        }
-        function downloadFromUrl(url, fileName) {
-            const anchorElement = document.createElement('a');
-            anchorElement.href = "www.google.com";
-            //anchorElement.download = fileName ?? '';
-            anchorElement.click();
-            anchorElement.remove();
-        }
-        function goToDownload() {
-            window.open("https://localhost:5001/files/download.html", "_blank")
-        }
     </script>
 </body>
 </html>
