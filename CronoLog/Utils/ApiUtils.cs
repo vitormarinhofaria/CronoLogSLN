@@ -2,11 +2,21 @@
 {
     public static class ApiUtils
     {
-#if DEBUG
-        public const string API_URL = "https://localhost:5001";
-#else
-        // public const string API_URL = "https://trellotemporizador.herokuapp.com";
-        public const string API_URL = "https://trello-timer.herokuapp.com";
-#endif
+
+        public static string API_URL
+        {
+            get
+            {
+                var env_addr = System.Environment.GetEnvironmentVariable("API_URL");
+                if (env_addr == null)
+                {
+                    return "https://localhost:5001";
+                }
+                else
+                {
+                    return env_addr;
+                }
+            }
+        }
     }
 }

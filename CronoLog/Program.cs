@@ -8,6 +8,7 @@ namespace CronoLog
     {
         public static void Main(string[] args)
         {
+            CodeGen.GenAll();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -16,12 +17,7 @@ namespace CronoLog
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
 #if DEBUG
-                    try
-                    {
-                        Console.WriteLine(Environment.OSVersion);
-                    }catch{
-                        
-                    }
+
 #else
                     var port = int.Parse(Environment.GetEnvironmentVariable("PORT"));
                     webBuilder.UseUrls($"http://*:{port}");
