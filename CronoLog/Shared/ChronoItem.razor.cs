@@ -42,9 +42,9 @@ namespace CronoLog.Shared
         private bool requestHiddenConfirmation = false;
         protected override async Task OnInitializedAsync()
         {
-            Chrono.Start = Chrono.Start.ToLocalTime().AddSeconds(-Chrono.Start.Second);
+            Chrono.Start = Chrono.Start.AddSeconds(-Chrono.Start.Second);
 
-            Chrono.End = Chrono.End.ToLocalTime().AddSeconds(-Chrono.End.Second);
+            Chrono.End = Chrono.End.AddSeconds(-Chrono.End.Second);
 
             SelectedMember = Chrono.StartMember;
 
@@ -109,8 +109,8 @@ namespace CronoLog.Shared
             updateRequest.Start = updateRequest.Start.ToUniversalTime();
             updateRequest.End = updateRequest.End.ToUniversalTime();
             var json = JsonSerializer.Serialize(updateRequest);
-            updateRequest.Start = updateRequest.Start.ToLocalTime();
-            updateRequest.End = updateRequest.End.ToLocalTime();
+            updateRequest.Start = Utils.DateUtils.ToBrSpTimezone(updateRequest.Start);
+            updateRequest.End = Utils.DateUtils.ToBrSpTimezone(updateRequest.End);
 
             StringContent content = new(json);
 

@@ -1,1 +1,1 @@
-trellotimer.herokuapp.com = v47
+trellotemporizador.herokuapp.com = v50

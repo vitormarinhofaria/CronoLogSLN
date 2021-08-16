@@ -81,13 +81,8 @@ namespace CronoLog.Pages
                 {
                     foreach (var cTimer in card.Timers)
                     {
-#if DEBUG
-                        cTimer.Start = TimeZoneInfo.ConvertTimeFromUtc(cTimer.Start, TimeZoneInfo.Local);
-                        cTimer.End = TimeZoneInfo.ConvertTimeFromUtc(cTimer.End, TimeZoneInfo.Local);
-#else
-                        cTimer.Start = TimeZoneInfo.ConvertTimeFromUtc(cTimer.Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
-                        cTimer.End = TimeZoneInfo.ConvertTimeFromUtc(cTimer.End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
-#endif
+                        cTimer.Start = DateUtils.ToBrSpTimezone(cTimer.Start);
+                        cTimer.End = DateUtils.ToBrSpTimezone(cTimer.End);
                     }
                     cardsList.Add(card);
                 }

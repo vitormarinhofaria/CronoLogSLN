@@ -28,7 +28,7 @@
         }
         foreach (var timer in Card.Timers)
         {
-            var end = (timer.State == TimeState.RUNNING) ? DateTime.UtcNow : timer.End;
+            var end = (timer.State == TimeState.RUNNING) ? DateUtils.ToBrSpTimezone(DateTime.UtcNow) : timer.End;
             var duration = end - timer.Start;
             Duration += duration;
         }
