@@ -29,5 +29,13 @@ namespace CronoLog.Utils
             string hours = (duration.Hours + days < 10) ? $"0{duration.Hours + days}" : $"{duration.Hours + days}";
             return $"{hours}h {minutes}m";
         }
+        public static DateTime ToBrSpTimezone(DateTime input)
+        {
+#if DEBUG
+            return TimeZoneInfo.ConvertTimeFromUtc(input, TimeZoneInfo.Local);
+#else
+            return TimeZoneInfo.ConvertTimeFromUtc(input, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+#endif
+        }
     }
 }
