@@ -2,9 +2,6 @@
   "version": "1.0",
   "defaultProvider": "cdnjs",
   "libraries": [
-    {
-      "library": "commonmark@0.29.3",
-      "destination": "wwwroot/commonmark/"
-    }
+
   ]
 }
