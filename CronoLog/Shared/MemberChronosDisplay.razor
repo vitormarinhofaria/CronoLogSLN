@@ -23,8 +23,8 @@
     {
         foreach (var timer in Timers)
         {
-            var end = (timer.State == TimeState.RUNNING) ? DateTime.UtcNow : timer.End;
-            var duration = end - timer.Start; ;
+            var end = (timer.State == TimeState.RUNNING) ? DateUtils.ToBrSpTimezone(DateTime.UtcNow) : timer.End;
+            var duration = end - timer.Start;
             Duration += duration;
         }
         TotalTime = DateUtils.HoursDuration(Duration);
