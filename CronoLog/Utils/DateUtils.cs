@@ -37,5 +37,17 @@ namespace CronoLog.Utils
             return TimeZoneInfo.ConvertTimeFromUtc(input, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
 #endif
         }
+        public static DateTime ToDbSaveTime(DateTime date)
+        {
+            if (date.Kind == DateTimeKind.Utc)
+            {
+                return date;
+            }
+            else
+            {
+                date = date.AddHours(3);
+                return date.ToUniversalTime();
+            }
+        }
     }
 }

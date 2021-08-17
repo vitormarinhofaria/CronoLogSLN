@@ -42,25 +42,19 @@ namespace CronoLog.Shared
         private bool requestHiddenConfirmation = false;
         protected override async Task OnInitializedAsync()
         {
-            Chrono.Start = Chrono.Start.AddSeconds(-Chrono.Start.Second);
-
-            Chrono.End = Chrono.End.AddSeconds(-Chrono.End.Second);
-
-            SelectedMember = Chrono.StartMember;
 
             updateRequest.CardId = CardId;
+            SelectedMember = Chrono.StartMember;
+            updateRequest.MemberId = Chrono.StartMember.Id;
+            updateRequest.RequestMemberId = MemberId;
 
+            Chrono.Start = Chrono.Start.AddSeconds(-Chrono.Start.Second);
+            Chrono.End = Chrono.End.AddSeconds(-Chrono.End.Second);
+            updateRequest.ChronoId = Chrono.Id;
             updateRequest.Start = Chrono.Start;
             updateRequest.End = Chrono.End;
 
-            updateRequest.MemberId = Chrono.StartMember.Id;
-
-            updateRequest.ChronoId = Chrono.Id;
-
-            updateRequest.RequestMemberId = MemberId;
-
             await base.OnInitializedAsync();
-
         }
 
         public async void SaveBtn_()
@@ -81,10 +75,10 @@ namespace CronoLog.Shared
                     var updateMember = board.Members.Find((m) => m.Id == updateData.MemberId);
 
                     chrono.StartMember = updateMember;
-                    chrono.Start = updateData.Start;
+                    chrono.Start = DateUtils.ToDbSaveTime(updateData.Start);
                     if (chrono.State != TimeState.RUNNING)
                     {
-                        chrono.End = updateData.End;
+                        chrono.End = DateUtils.ToDbSaveTime(updateData.End);
                     }
                     await cardsCollection.FindOneAndReplaceAsync(cardFilter, card);
 
