@@ -3,15 +3,10 @@
 @inject IJSRuntime js;
 @inject HttpClient httpClient;
 
-@* Injetar instancia do MongoDb para inicializar metodos de pausar cartões e impedir a aplicação de hibernar (Startup.ConfigureServices)*@
-@using MongoDB.Driver;
-@inject MongoClient m;
-
 @code
 {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await httpClient.GetAsync($"{ApiUtils.API_URL}/Timed/init");
         await JsUtils.ShowMarkdown(js);
         await base.OnAfterRenderAsync(firstRender);
     }
