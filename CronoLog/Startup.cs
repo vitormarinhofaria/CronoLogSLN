@@ -58,7 +58,7 @@ namespace CronoLog
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseDefaultFiles();
             app.UseRouting();

@@ -10,7 +10,7 @@
                 var env_addr = System.Environment.GetEnvironmentVariable("API_URL");
                 if (env_addr == null)
                 {
-                    return "https://localhost:5001";
+                    return "http://localhost:5000";
                 }
                 else
                 {
