@@ -28,7 +28,6 @@ namespace CronoLog.Controllers
 
             bool running = true;
             DateTime doWhen = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 2, 55, 0);
-            doWhen = doWhen.AddDays(1);
             Console.WriteLine($"Cartões em excecução serão pausados automaticamente em: {doWhen.ToLongDateString()} {doWhen.ToLongTimeString()} UTC");
 
             while (running)
