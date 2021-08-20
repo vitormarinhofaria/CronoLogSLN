@@ -10,8 +10,8 @@ COPY . .
 RUN dotnet publish -c release -o /app --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-COPY ping.sh ping.sh
-RUN chmod +x ping.sh
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["./CronoLog"]
+COPY ping.sh ping.sh
+#RUN chmod +x ping.sh
+#ENTRYPOINT ["./CronoLog"]
