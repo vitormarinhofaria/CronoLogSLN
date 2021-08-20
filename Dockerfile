@@ -8,10 +8,10 @@ RUN dotnet restore
 
 COPY . .
 #RUN dotnet publish -c release -o /app --no-restore
-RUN dotnet publish -r linux-musl-x64 -p:PublishTrimmed=true -c release -o /app --self-contained --no-restore
+RUN dotnet publish -c release -o /app --no-restore
 
 #FROM mcr.microsoft.com/dotnet/aspnet:5.0
-FROM alpine:latest
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /app .
