@@ -89,9 +89,10 @@ namespace CronoLog.Controllers
             }
         }
 
-        [HttpGet("/shake")]
+        [HttpGet("shake")]
         public IActionResult Shake()
         {
+            Console.WriteLine("CronoLog: <= timed/shake");
             return new JsonResult(new { });
         }
     }
