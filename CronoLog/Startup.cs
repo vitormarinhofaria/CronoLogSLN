@@ -30,7 +30,6 @@ namespace CronoLog
             services.AddSingleton(provider =>
             {
                 var client = new MongoClient(Environment.GetEnvironmentVariable("MONGO_STRING"));
-                TimedController.SetEndTime(client);
                 return client;
             });
             services.AddCors(options =>
