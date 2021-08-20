@@ -15,6 +15,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /app .
+
 COPY ping.sh ping.sh
 RUN chmod +x ping.sh
+COPY pause_cards.sh pause_cards.sh
+RUN chmod +x pause_cards.sh
+
 #ENTRYPOINT ["./CronoLog"]
