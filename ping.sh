@@ -1,0 +1,1 @@
+curl $API_URL/timed/shake
