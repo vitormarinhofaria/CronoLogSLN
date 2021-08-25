@@ -42,17 +42,22 @@
             link.click();
             document.body.removeChild(link);
         }
-        function showMarkdown() {
-            getMarkdown()
-        }
-        async function getMarkdown() {
-            var mdr = await fetch("/tpu/content/tutorial.md");
-            var mdt = await mdr.text()
+        async function showMd(mdText) {
             var reader = new commonmark.Parser()
-            var parsed = reader.parse(mdt)
+            var parsed = reader.parse(mdText)
             var renderer = new commonmark.HtmlRenderer()
             var htmlString = renderer.render(parsed)
-            document.body.innerHTML = htmlString
+
+            var wDiv = document.createElement("div")
+            var centerDiv = document.createElement("div")
+            centerDiv.innerHTML = htmlString
+
+            wDiv.style.marginTop = "8px"
+            wDiv.style.display = "flex"
+            wDiv.style.justifyContent = "center"
+
+            wDiv.appendChild(centerDiv)
+            document.body.appendChild(wDiv)
         }
 
     </script>
