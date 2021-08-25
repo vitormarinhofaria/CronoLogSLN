@@ -13,6 +13,7 @@ RUN dotnet publish -c release -o /app --no-restore
 #FROM mcr.microsoft.com/dotnet/aspnet:5.0
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 RUN apk add --no-cache curl
+RUN apk add --no-cache tzdata
 WORKDIR /app
 COPY --from=build /app .
 
