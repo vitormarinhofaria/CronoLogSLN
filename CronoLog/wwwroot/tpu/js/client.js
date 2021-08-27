@@ -4,148 +4,151 @@ var Promise = TrelloPowerUp.Promise;
 TrelloPowerUp.initialize({
     "board-buttons": InitBoardButtons,
     'card-buttons': InitCardButtons,
+    'card-details-badges': cardBadges,
+    "card-badges": cardBadges
+});
 
-    "card-badges": async (t, options) => {
-        let list = await t.list("id", "name");
-        let trueMember = await t.member("id", "fullName");
-        let member = { "id": trueMember.id, "name": trueMember.fullName }
-        let board = await t.board("id", "name");
-        let card = await t.card("id", "name");
-        let dados = {
-            card,
-            member,
-            list,
-            board,
-        }
+async function cardBadges(t, options) {
+    let list = await t.list("id", "name");
+    let trueMember = await t.member("id", "fullName");
+    let member = { "id": trueMember.id, "name": trueMember.fullName }
+    let board = await t.board("id", "name");
+    let card = await t.card("id", "name");
+    let dados = {
+        card,
+        member,
+        list,
+        board,
+    }
 
-        //CardBadgeInfo -- remoção temporaria
-        let cardBadgeInfoResponse;
-        try {
-            cardBadgeInfoResponse = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                method: 'GET',
-            });
-        } catch (error) {
-        }
-
-        let cardBadge = [];
-        if (cardBadgeInfoResponse.status !== 404) {
-            let cardBadgeInfo = await cardBadgeInfoResponse.json();
-            if (cardBadgeInfo) {
-                if (cardBadgeInfo.descriptions) {
-                    cardBadge = cardBadgeInfo.descriptions.map((d) => {
-                        return {
-                            dynamic: async function () {
-                                await t.get('card', 'shared', 'shouldUpdate', false);
-                                await t.set('card', 'shared', 'shouldUpdate', false);
-                                return {
-                                    text: d,
-                                    color: 'light-gray'
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-        }
-        //CardBadgeInfo ^
-        console.log(JSON.stringify(dados))
-        console.log(dados)
-        let cardResponse = await fetch(TRELLO_TIMER.API_URL + "/CardTime/time-card", {
+    //CardBadgeInfo -- remoção temporaria
+    let cardBadgeInfoResponse;
+    try {
+        cardBadgeInfoResponse = await fetch(TRELLO_TIMER.API_URL + "/CardInfoBadge/" + card.id, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            method: 'POST',
-            body: JSON.stringify(dados)
+            method: 'GET',
         });
-        let responseJson = await cardResponse.json();
+    } catch (error) {
+    }
 
-        if (responseJson === undefined || responseJson.timers === undefined || responseJson.timers.length === 0) {
-            return cardBadge;
-        }
-
-        let currentTimer = responseJson.timers[responseJson.timers.length - 1];
-        if (currentTimer === undefined) {
-            return cardBadge;
-        }
-
-        let initTime = new Date(currentTimer["start"]);
-
-        let totalDuration = 0;
-        responseJson.timers.forEach((val) => {
-            if (val.state === TimerState.STOPPED || val.state === TimerState.PAUSED) {
-                let startTime = new Date(val.start);
-                let endTime = new Date(val.end);
-
-                let thisDuration = endTime.getTime() - startTime.getTime();
-                totalDuration += thisDuration;
-            }
-        });
-
-
-
-        if (currentTimer.state === TimerState.STOPPED || currentTimer.state === TimerState.PAUSED) {
-            let color;
-
-            switch (currentTimer.state) {
-                case TimerState.STOPPED:
-                    color = "red";
-                    break
-                case TimerState.PAUSED:
-                    color = "orange";
-                    break
-            }
-
-            if (list.name.toLowerCase().includes("finalizado")) {
-                color = "green";
-            }
-
-            let returnArray = []
-            let listName = list.name.toLowerCase()
-            if (!listName.includes("dúvidas") && !listName.includes("duvidas") && !listName.includes("geral")) {
-                returnArray.push({
-                    dynamic: async function () {
-                        await t.get('card', 'shared', 'shouldUpdate', false);
-                        await t.set('card', 'shared', 'shouldUpdate', false);
-                        return {
-                            icon: Icons.timer,
-                            text: `${getDurationStringHours(totalDuration)}`,
-                            color
+    let cardBadge = [];
+    if (cardBadgeInfoResponse.status !== 404) {
+        let cardBadgeInfo = await cardBadgeInfoResponse.json();
+        if (cardBadgeInfo) {
+            if (cardBadgeInfo.descriptions) {
+                cardBadge = cardBadgeInfo.descriptions.map((d) => {
+                    return {
+                        dynamic: async function () {
+                            await t.get('card', 'shared', 'shouldUpdate', false);
+                            await t.set('card', 'shared', 'shouldUpdate', false);
+                            return {
+                                text: d,
+                                color: 'light-gray'
+                            }
                         }
                     }
-                });
+                })
             }
-            cardBadge.forEach(b => returnArray.push(b))
-            return returnArray
+        }
+    }
+    //CardBadgeInfo ^
+    console.log(JSON.stringify(dados))
+    console.log(dados)
+    let cardResponse = await fetch(TRELLO_TIMER.API_URL + "/CardTime/time-card", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(dados)
+    });
+    let responseJson = await cardResponse.json();
+
+    if (responseJson === undefined || responseJson.timers === undefined || responseJson.timers.length === 0) {
+        return cardBadge;
+    }
+
+    let currentTimer = responseJson.timers[responseJson.timers.length - 1];
+    if (currentTimer === undefined) {
+        return cardBadge;
+    }
+
+    let initTime = new Date(currentTimer["start"]);
+
+    let totalDuration = 0;
+    responseJson.timers.forEach((val) => {
+        if (val.state === TimerState.STOPPED || val.state === TimerState.PAUSED) {
+            let startTime = new Date(val.start);
+            let endTime = new Date(val.end);
+
+            let thisDuration = endTime.getTime() - startTime.getTime();
+            totalDuration += thisDuration;
+        }
+    });
+
+
+
+    if (currentTimer.state === TimerState.STOPPED || currentTimer.state === TimerState.PAUSED) {
+        let color;
+
+        switch (currentTimer.state) {
+            case TimerState.STOPPED:
+                color = "red";
+                break
+            case TimerState.PAUSED:
+                color = "orange";
+                break
+        }
+
+        if (list.name.toLowerCase().includes("finalizado")) {
+            color = "green";
         }
 
         let returnArray = []
-
         let listName = list.name.toLowerCase()
         if (!listName.includes("dúvidas") && !listName.includes("duvidas") && !listName.includes("geral")) {
             returnArray.push({
                 dynamic: async function () {
                     await t.get('card', 'shared', 'shouldUpdate', false);
                     await t.set('card', 'shared', 'shouldUpdate', false);
-                    let currentDate = Date.now();
-                    let duration = getDurationStringHours((currentDate - initTime.getTime()) + totalDuration);
                     return {
                         icon: Icons.timer,
-                        text: `${duration}`,
-                        color: "blue",
-                        refresh: 30
+                        text: `${getDurationStringHours(totalDuration)}`,
+                        color
                     }
                 }
             });
         }
-        cardBadge.forEach(b => returnArray.push(b));
+        cardBadge.forEach(b => returnArray.push(b))
         return returnArray
     }
-});
+
+    let returnArray = []
+
+    let listName = list.name.toLowerCase()
+    if (!listName.includes("dúvidas") && !listName.includes("duvidas") && !listName.includes("geral")) {
+        returnArray.push({
+            dynamic: async function () {
+                await t.get('card', 'shared', 'shouldUpdate', false);
+                await t.set('card', 'shared', 'shouldUpdate', false);
+                let currentDate = Date.now();
+                let duration = getDurationStringHours((currentDate - initTime.getTime()) + totalDuration);
+                return {
+                    icon: Icons.timer,
+                    text: `${duration}`,
+                    color: "blue",
+                    refresh: 30
+                }
+            }
+        });
+    }
+    cardBadge.forEach(b => returnArray.push(b));
+    return returnArray
+}
+
 
 function getDuration(milli) {
     let minutes = Math.floor(milli / 60000);
