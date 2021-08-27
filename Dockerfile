@@ -17,9 +17,11 @@ RUN apk add --no-cache tzdata
 WORKDIR /app
 COPY --from=build /app .
 
+COPY ./CronoLog/tutorial.md /app/tutorial.md
+
 COPY ping.sh ping.sh
-RUN chmod +x ping.sh
 COPY pause_cards.sh pause_cards.sh
 RUN chmod +x pause_cards.sh
+RUN chmod +x ping.sh
 
 #ENTRYPOINT ["./CronoLog"]
