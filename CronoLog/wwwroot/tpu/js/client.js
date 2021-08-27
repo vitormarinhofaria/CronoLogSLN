@@ -4,7 +4,7 @@ var Promise = TrelloPowerUp.Promise;
 TrelloPowerUp.initialize({
     "board-buttons": InitBoardButtons,
     'card-buttons': InitCardButtons,
-    'card-details-badges': cardBadges,
+    'card-detail-badges': cardBadges,
     "card-badges": cardBadges
 });
 
