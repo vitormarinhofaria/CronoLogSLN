@@ -14,6 +14,7 @@
     - Botões do quadro
     - Emblemas do cartão
     - Botões do cartão
+    - Emblemas de detalhes do cartão
 
 
 - Volte para *Informações básicas* e salve as alterações
