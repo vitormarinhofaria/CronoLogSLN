@@ -77,7 +77,7 @@ async function cardDetailBadges(t, options) {
                     await t.get('card', 'shared', 'shouldUpdate', false);
                     await t.set('card', 'shared', 'shouldUpdate', false);
                     return {
-                        title: 'Temporizador',
+                        title: 'Cronômetro',
                         icon: Icons.timer,
                         text: `${getDurationStringHours(totalDuration)}`,
                         color
@@ -99,7 +99,7 @@ async function cardDetailBadges(t, options) {
                 let currentDate = Date.now();
                 let duration = getDurationStringHours((currentDate - initTime.getTime()) + totalDuration);
                 return {
-                    title: 'Temporizador',
+                    title: 'Cronômetro',
                     icon: Icons.timer,
                     text: `${duration}`,
                     color: "blue",
