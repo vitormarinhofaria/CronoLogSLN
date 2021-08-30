@@ -1,0 +1,110 @@
+﻿@page "/demo";
+
+@using CronoLog.Shared;
+
+@inject HttpClient httpClient;
+
+<div class="cColumn cBackground" id="containerMain">
+    @if (BoardData != null && BoardData.Cards != null && BoardData.Members != null)
+    {
+        <div class="cColumn justify-content-center align-items-center redContainer">
+            <div class="cRow justify-content-between pr-4 pl-4 pt-3 pb-3 w-100">
+                <h2 class="text-center">Informações do Quadro - @BoardData.BoardName</h2>
+                <div class="cRow justify-content-center align-items-center p-0 m-0">
+                    <div class="cRow justify-content-center align-items-center pr-3">
+                        <span class="oi oi-reload hoverable" @onclick="(e) => RefreshPage()"></span>
+                    </div>
+                    <div class="cRow justify-content-center align-items-center nDownloadBtn text-center p-2 m-1"
+                         @onclick="(e) => { DownloadExcel(); }">
+                        <span class="oi oi-document"></span>
+                        <label class="m-0 pl-1">Exportar Planilha</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cCardGrid">
+            @foreach (var card in BoardData.Cards)
+            {
+                string cardClass = "cColumn nCard";
+                string cCardRowClass = "cRow cCardRow w-100";
+                if (CurrentCardId == card.Id)
+                {
+                    cardClass = cardClass + " selected";
+                    cCardRowClass = cCardRowClass + " selected";
+                }
+                if (CurrentMemberId == "")
+                {
+                    cardClass += " noMember";
+                    cCardRowClass += " noMember";
+                }
+
+                <div @key="card.Id" class=@cardClass @onclick="(e) => SetCurrentSelected(card)">
+                    <div class=@cCardRowClass>
+                        @if (cCardRowClass.Contains("selected"))
+                        {
+                            <CardDisplay @key="card.Id" Card="card" Selected=@true />
+                        }
+                        else
+                        {
+                            <CardDisplay @key="card.Id" Card="card" Selected=@false />
+                        }
+                        <div class="cRow justify-content-center ml-4">
+                            @if (CardMemberTimers.ContainsKey(card.Id) && CurrentCardId == card.Id)
+                            {
+                                @foreach (var member in BoardData.Members)
+                                {
+                                    if (CardMemberTimers[card.Id].ContainsKey(member.Id))
+                                    {
+                                        var borderColor = (CurrentMemberId == member.Id && CurrentCardId == card.Id) ?
+                                        "nBorderSelected" :
+                                        "nBorderNotSelected";
+                                        var styleClass = $"{borderColor} m-2";
+                                        <div class=@styleClass @onclick="(e) => SetCurrentMember(card, member)">
+                                            <MemberChronosDisplay Member="@member" Timers="@CardMemberTimers[card.Id][member.Id]" />
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                    @if (CurrentCardId == card.Id)
+                    {
+                        @if (CurrentMemberId != string.Empty && CardMemberTimers[CurrentCardId].ContainsKey(CurrentMemberId))
+                        {
+                            var lastDay = CardMemberTimers[CurrentCardId][CurrentMemberId].FirstOrDefault().Start;
+                            var counter = 0;
+                            <div class="cColumn align-items-center w-100 cChronoCol">
+                                @foreach (var chrono in CardMemberTimers[CurrentCardId][CurrentMemberId])
+                                {
+                                    @if (lastDay.Day != chrono.Start.Day || counter == 0 || lastDay.Month != chrono.Start.Month ||
+                            lastDay.Year != chrono.Start.Year)
+                                    {
+                                        var day = chrono.Start.Day.ToString();
+                                        var month = chrono.Start.Month.ToString();
+                                        @if (chrono.Start.Day < 10)
+                                        {
+                                            day = $"0{day}";
+                                        }
+                                        @if (chrono.Start.Month < 10)
+                                        {
+                                            month = $"0{month}";
+                                        }
+                                        <h4 class="m-0 pl-4 pt-1 w-75">
+                                            @day/@month/@chrono.Start.Year
+                                        </h4>
+                                    }
+                                    lastDay = chrono.Start;
+                                    counter += 1;
+                                    <ChronoItemDemo @key="@chrono.Id" CardId="@CurrentCardId" Chrono="@chrono" Members="@BoardData.Members"
+                                                firstClick=@firstClick />
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
