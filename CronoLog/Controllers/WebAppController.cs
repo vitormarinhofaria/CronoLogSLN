@@ -437,16 +437,17 @@ namespace CronoLog.Controllers
         {
             List<KeyValuePair<string, int>> prioridades = new()
             {
-                new KeyValuePair<string, int>("[Estudo]", 1),
-                new KeyValuePair<string, int>("[Modelagem]", 2),
-                new KeyValuePair<string, int>("[Desenho]", 3),
-                new KeyValuePair<string, int>("[Conferência]", 4),
+                new KeyValuePair<string, int>("[estudo]", 1),
+                new KeyValuePair<string, int>("[modelagem]", 2),
+                new KeyValuePair<string, int>("[desenho]", 3),
+                new KeyValuePair<string, int>("[conferência]", 4),
+                new KeyValuePair<string, int>("[conferencia]", 4),
             };
 
             cards.Sort((p, n) =>
             {
-                var x = p.Name;
-                var y = n.Name;
+                var x = p.Name.ToLowerInvariant();
+                var y = n.Name.ToLowerInvariant();
 
                 var anyX = prioridades.Any(z => x.Contains(z.Key));
                 var anyY = prioridades.Any(z => y.Contains(z.Key));
