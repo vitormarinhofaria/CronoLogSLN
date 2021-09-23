@@ -3,7 +3,8 @@ using CronoLog.Utils;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using PicoXLSX;
+using NanoXLSX;
+using NanoXLSX.Styles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -265,9 +266,10 @@ namespace CronoLog.Controllers
             var boardHeadStyle = new Style();
             boardHeadStyle.CurrentFont.Bold = true;
             boardHeadStyle.CurrentFont.Size = 11;
-            boardHeadStyle.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.center;
-            boardHeadStyle.Append(Style.BasicStyles.ColorizedBackground("A6A6A6"));
-            boardHeadStyle.Append(Style.BasicStyles.BorderFrame);
+            boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            boardHeadStyle.Append(BasicStyles.ColorizedBackground("A6A6A6"));
+            boardHeadStyle.Append(BasicStyles.BorderFrame);
 
             workbook.CurrentWorksheet.MergeCells("A4:E4");
             workbook.CurrentWorksheet.AddCell("Serviço", "A5");
@@ -340,12 +342,12 @@ namespace CronoLog.Controllers
                 currentCellNumber += 1;
             }
             var itemsStyle = new Style();
-            itemsStyle.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.center;
-            itemsStyle.CurrentCellXf.VerticalAlign = Style.CellXf.VerticalAlignValue.center;
-            itemsStyle.CurrentBorder.BottomStyle = Style.Border.StyleValue.thin;
-            itemsStyle.CurrentBorder.TopStyle = Style.Border.StyleValue.thin;
-            itemsStyle.CurrentBorder.RightStyle = Style.Border.StyleValue.thin;
-            itemsStyle.CurrentBorder.LeftStyle = Style.Border.StyleValue.thin;
+            itemsStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            itemsStyle.CurrentCellXf.VerticalAlign = CellXf.VerticalAlignValue.center;
+            itemsStyle.CurrentBorder.BottomStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.TopStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.RightStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.LeftStyle = Border.StyleValue.thin;
             itemsStyle.CurrentBorder.BottomColor = "000000";
             itemsStyle.CurrentBorder.TopColor = "000000";
             itemsStyle.CurrentBorder.RightColor = "000000";
@@ -368,9 +370,9 @@ namespace CronoLog.Controllers
             var boardHeadStyle = new Style();
             boardHeadStyle.CurrentFont.Bold = true;
             boardHeadStyle.CurrentFont.Size = 11;
-            boardHeadStyle.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.center;
-            boardHeadStyle.Append(Style.BasicStyles.ColorizedBackground("A6A6A6"));
-            boardHeadStyle.Append(Style.BasicStyles.BorderFrame);
+            boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            boardHeadStyle.Append(BasicStyles.ColorizedBackground("A6A6A6"));
+            boardHeadStyle.Append(BasicStyles.BorderFrame);
 
             workbook.CurrentWorksheet.MergeCells("A4:E4");
             workbook.CurrentWorksheet.AddCell("Serviço", "A5");
@@ -404,25 +406,25 @@ namespace CronoLog.Controllers
             }
 
             var borderStyle = new Style();
-            borderStyle.CurrentBorder.TopStyle = Style.Border.StyleValue.thin;
-            borderStyle.CurrentBorder.BottomStyle = Style.Border.StyleValue.thin;
-            borderStyle.CurrentBorder.RightStyle = Style.Border.StyleValue.thin;
-            borderStyle.CurrentBorder.LeftStyle = Style.Border.StyleValue.thin;
+            borderStyle.CurrentBorder.TopStyle = Border.StyleValue.thin;
+            borderStyle.CurrentBorder.BottomStyle = Border.StyleValue.thin;
+            borderStyle.CurrentBorder.RightStyle = Border.StyleValue.thin;
+            borderStyle.CurrentBorder.LeftStyle = Border.StyleValue.thin;
             borderStyle.CurrentBorder.BottomColor = "000000";
             borderStyle.CurrentBorder.TopColor = "000000";
             borderStyle.CurrentBorder.RightColor = "000000";
             borderStyle.CurrentBorder.LeftColor = "000000";
-            borderStyle.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.center;
+            borderStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
             workbook.CurrentWorksheet.SetStyle($"A6:E{currentCellNumber - 1}", borderStyle);
 
             var cardNameStyle = new Style();
-            cardNameStyle.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.left;
-            cardNameStyle.Append(Style.BasicStyles.BorderFrame);
+            cardNameStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.left;
+            cardNameStyle.Append(BasicStyles.BorderFrame);
             workbook.CurrentWorksheet.SetStyle($"B6:B{currentCellNumber - 1 }", cardNameStyle);
 
             var spacerCellStyle = new Style();
             spacerCellStyle.Append(borderStyle);
-            spacerCellStyle.Append(Style.BasicStyles.ColorizedBackground("A6A6A6"));
+            spacerCellStyle.Append(BasicStyles.ColorizedBackground("A6A6A6"));
 
             foreach (string range in spacerCells)
             {
@@ -433,23 +435,45 @@ namespace CronoLog.Controllers
 
         private static void SortCards(List<TrelloCard> cards)
         {
+            List<KeyValuePair<string, int>> prioridades = new()
+            {
+                new KeyValuePair<string, int>("[Estudo]", 1),
+                new KeyValuePair<string, int>("[Modelagem]", 2),
+                new KeyValuePair<string, int>("[Desenho]", 3),
+                new KeyValuePair<string, int>("[Conferência]", 4),
+            };
+
             cards.Sort((p, n) =>
             {
-                var priority = "[Modelagem]";
-                if (p.Name.Contains(priority) && n.Name.Contains(priority))
+                var x = p.Name;
+                var y = n.Name;
+
+                var anyX = prioridades.Any(z => x.Contains(z.Key));
+                var anyY = prioridades.Any(z => y.Contains(z.Key));
+
+                if (anyX || anyY)
                 {
-                    return p.Name.CompareTo(n.Name);
-                }
-                else if (p.Name.Contains(priority) && !n.Name.Contains(priority))
-                {
-                    return -1;
-                }
-                else if (!p.Name.Contains(priority) && n.Name.Contains(priority))
-                {
-                    return 1;
+                    var firstX = prioridades.FirstOrDefault(z => x.Contains(z.Key));
+                    var firstY = prioridades.FirstOrDefault(z => y.Contains(z.Key));
+                    if (anyX && anyY)
+                    {
+                        if (firstX.Value > firstY.Value)
+                        {
+                            return firstX.Value;
+                        }
+                        else if (firstX.Value == firstY.Value)
+                        {
+                            return x.CompareTo(y);
+                        }
+
+                        return -firstX.Value;
+                    }
+
+                    if (anyX) return -firstX.Value;
+                    if (anyY) return firstY.Value;
                 }
 
-                return p.Name.CompareTo(n.Name);
+                return x.CompareTo(y);
             });
         }
 
@@ -460,13 +484,13 @@ namespace CronoLog.Controllers
             boldText.CurrentFont.Bold = true;
             boldText.CurrentFont.Size = 11;
             var centredText = new Style();
-            centredText.CurrentCellXf.HorizontalAlign = Style.CellXf.HorizontalAlignValue.center;
+            centredText.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
             centredText.CurrentFont.Bold = true;
             centredText.CurrentFont.Size = 14;
 
-            centredText.Append(Style.BasicStyles.ColorizedBackground("A6A6A6"));
-            centredText.Append(Style.BasicStyles.BorderFrame);
-            boldText.Append(Style.BasicStyles.BorderFrame);
+            centredText.Append(BasicStyles.ColorizedBackground("A6A6A6"));
+            centredText.Append(BasicStyles.BorderFrame);
+            boldText.Append(BasicStyles.BorderFrame);
 
             workbook.CurrentWorksheet.AddCell(wbName, "A1", centredText);
 
@@ -484,18 +508,18 @@ namespace CronoLog.Controllers
             workbook.CurrentWorksheet.SetStyle("A2", boldText);
             workbook.CurrentWorksheet.SetStyle("A3", boldText);
             workbook.CurrentWorksheet.SetStyle($"{letters[span]}2", boldText);
-            workbook.CurrentWorksheet.SetStyle("B2", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("C2", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("D2", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("B3", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("C3", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("D3", Style.BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("E3", Style.BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("B2", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("C2", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("D2", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("B3", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("C3", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("D3", BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("E3", BasicStyles.BorderFrame);
 
             if (span == 6)
             {
-                workbook.CurrentWorksheet.SetStyle("E2", Style.BasicStyles.BorderFrame);
-                workbook.CurrentWorksheet.SetStyle("F3", Style.BasicStyles.BorderFrame);
+                workbook.CurrentWorksheet.SetStyle("E2", BasicStyles.BorderFrame);
+                workbook.CurrentWorksheet.SetStyle("F3", BasicStyles.BorderFrame);
             }
         }
 
