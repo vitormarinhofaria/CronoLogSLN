@@ -6,9 +6,11 @@
 @inject MongoClient MongoDb
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 
-<div class="cColumn cBackground">
-    <h4>Baixar resumo de todos os quadros</h4>
-    <button @onclick="(e) => DownloadAllBoards()">Download</button>
+<div style="margin-top: 8px; display: flex; justify-content: center;" class="cBackground">
+    <div class="cColumn">
+        <h4>Baixar resumo de todos os quadros</h4>
+        <button @onclick="(e) => DownloadAllBoards()" style="width: 200px;">Download</button>
+    </div>
 </div>
 
 @code {
