@@ -1,0 +1,41 @@
+﻿@page "/boards"
+@using BlazorDownloadFile
+@using MongoDB.Driver
+@using System.IO
+@using System.IO.Compression
+@inject MongoClient MongoDb
+@inject IBlazorDownloadFileService BlazorDownloadFileService
+
+<div class="cColumn cBackground">
+    <h4>Baixar resumo de todos os quadros</h4>
+    <button @onclick="(e) => DownloadAllBoards()">Download</button>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private async Task DownloadAllBoards()
+    {
+        var boards = await DatabaseUtils.BoardsCollection(MongoDb).FindAsync(FilterDefinition<TrelloBoard>.Empty);
+        var boardsList = boards.ToList();
+
+        var zipFileName = $"Resumo_quadros_{DateUtils.ToBrSpTimezone(DateTime.Now)}.zip";
+        var zipFile = ZipFile.Open(zipFileName, ZipArchiveMode.Create);
+        foreach (var board in boardsList)
+        {
+            var xlsxFileBytes = Controllers.WebAppController.GetExcelLocal(board.Id, MongoDb, out string fileName);
+            var entry = zipFile.CreateEntry(fileName);
+            var entryStream = entry.Open();
+            await entryStream.WriteAsync(xlsxFileBytes);
+            await entryStream.FlushAsync();
+            await entryStream.DisposeAsync();
+        }
+        zipFile.Dispose();
+
+        var fileContents = await File.ReadAllBytesAsync(zipFileName);
+        await BlazorDownloadFileService.DownloadFile(zipFileName, fileContents, "application/octet-stream");
+    }
+}
