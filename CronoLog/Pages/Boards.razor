@@ -22,7 +22,7 @@
         var boards = await DatabaseUtils.BoardsCollection(MongoDb).FindAsync(FilterDefinition<TrelloBoard>.Empty);
         var boardsList = boards.ToList();
 
-        var zipFileName = $"Resumo_quadros_{DateUtils.ToBrSpTimezone(DateTime.Now)}.zip";
+        var zipFileName = $"Resumo_quadros_{DateUtils.ToBrSpTimezone(DateTime.UtcNow)}.zip";
         var zipFile = ZipFile.Open(zipFileName, ZipArchiveMode.Create);
         foreach (var board in boardsList)
         {
