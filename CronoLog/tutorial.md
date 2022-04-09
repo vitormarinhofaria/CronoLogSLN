@@ -23,3 +23,6 @@
     - Power-Ups
         - Personalizar
             - Adicionar o power-up criado
+
+
+- Para baixar o resumo de todos os quadros, acesse <https://trellotemporizador.herokuapp.com/boards>
