@@ -25,6 +25,10 @@
         var boardsList = boards.ToList();
 
         var zipFileName = $"Resumo_quadros_{DateTime.UtcNow.Day}-{DateTime.UtcNow.Month}-{DateTime.UtcNow.Year}.zip";
+        if (File.Exists(zipFileName))
+        {
+            File.Delete(zipFileName);
+        }
         var zipFile = ZipFile.Open(zipFileName, ZipArchiveMode.Create);
         foreach (var board in boardsList)
         {
