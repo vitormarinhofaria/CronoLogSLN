@@ -9,18 +9,21 @@
 <div style="margin-top: 8px; display: flex; justify-content: center;" class="cBackground">
     <div class="cColumn">
         <h4>Baixar resumo de todos os quadros</h4>
-        <button @onclick="(e) => DownloadAllBoards()" style="width: 200px;">Download</button>
+        <button  disabled=@btnDisabled @onclick="(e) => DownloadAllBoards()" style="width: 200px;">Download</button>
     </div>
 </div>
 
 @code {
+    protected bool btnDisabled { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        btnDisabled = false;
         await base.OnInitializedAsync();
     }
 
     private async Task DownloadAllBoards()
     {
+        btnDisabled = true;
         var boards = await DatabaseUtils.BoardsCollection(MongoDb).FindAsync(FilterDefinition<TrelloBoard>.Empty);
         var boardsList = boards.ToList();
 
@@ -42,6 +45,8 @@
         zipFile.Dispose();
 
         var fileContents = await File.ReadAllBytesAsync(zipFileName);
+        btnDisabled = false;
         await BlazorDownloadFileService.DownloadFile(zipFileName, fileContents, "application/octet-stream");
+        
     }
 }
