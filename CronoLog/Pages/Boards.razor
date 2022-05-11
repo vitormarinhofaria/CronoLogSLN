@@ -58,7 +58,9 @@
     {
         btnDisabled = true;
         var fileContents = await Controllers.WebAppController.GetExcelAllBoardsDetails(MongoDb);
-        await BlazorDownloadFileService.DownloadFile("Resumo Torres.xlsx" , fileContents, "application/octet-stream");
+        await BlazorDownloadFileService.AddBuffer(File.OpenRead("Resumo Torres.xlsx"));
+        await BlazorDownloadFileService.DownloadBinaryBuffers("Resumo Torres.xlsx");
+        //await BlazorDownloadFileService.DownloadFile("Resumo Torres.xlsx" , fileContents, "application/octet-stream");
         btnDisabled = false;
     }
 }

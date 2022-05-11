@@ -219,7 +219,7 @@ namespace CronoLog.Controllers
             System.IO.File.Delete(fileName);
             return new JsonResult(bytes);
         }
-        public static async Task<byte[]> GetExcelAllBoardsDetails(MongoClient db)
+        public static async Task GetExcelAllBoardsDetails(MongoClient db)
         {
             var boards = await DatabaseUtils.BoardsCollection(db).FindAsync(Builders<TrelloBoard>.Filter.Empty);
             var boardsList = await boards.ToListAsync();
@@ -228,7 +228,7 @@ namespace CronoLog.Controllers
             Workbook workbook = new(fileName, "Detalhes");
 
             workbook.CurrentWorksheet.SetColumnWidth(0, 12);
-            workbook.CurrentWorksheet.SetColumnWidth(1, 30);
+            workbook.CurrentWorksheet.SetColumnWidth(1, 12);
             workbook.CurrentWorksheet.SetColumnWidth(2, 12);
             workbook.CurrentWorksheet.SetColumnWidth(3, 65);
             workbook.CurrentWorksheet.SetColumnWidth(4, 30);
@@ -323,11 +323,11 @@ namespace CronoLog.Controllers
             
             workbook.Save();
 
-            var f = System.IO.File.Open(fileName, FileMode.Open);
-            byte[] bytes = new byte[f.Length];
-            f.Read(bytes, 0, Convert.ToInt32(f.Length));
-            f.Close();
-            return bytes;
+            //var f = System.IO.File.Open(fileName, FileMode.Open);
+            //byte[] bytes = new byte[f.Length];
+            //f.Read(bytes, 0, Convert.ToInt32(f.Length));
+            //f.Close();
+            //return bytes;
         }
 
         public static byte[] GetExcelLocal(string boardId, MongoClient mDbClient, out string fileName)
