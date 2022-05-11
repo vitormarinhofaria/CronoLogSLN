@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build
 
 WORKDIR /source
-COPY ./*.sln ./
+#COPY ./*.sln ./
 COPY ./CronoLog/*.csproj ./CronoLog/
 
 RUN dotnet restore
