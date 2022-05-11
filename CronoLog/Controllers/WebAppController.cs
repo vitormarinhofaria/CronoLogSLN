@@ -219,6 +219,117 @@ namespace CronoLog.Controllers
             System.IO.File.Delete(fileName);
             return new JsonResult(bytes);
         }
+        public static async Task<byte[]> GetExcelAllBoardsDetails(MongoClient db)
+        {
+            var boards = await DatabaseUtils.BoardsCollection(db).FindAsync(Builders<TrelloBoard>.Filter.Empty);
+            var boardsList = await boards.ToListAsync();
+
+            string fileName = "Resumo Torres.xlsx";
+            Workbook workbook = new(fileName, "Detalhes");
+
+            workbook.CurrentWorksheet.SetColumnWidth(0, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(1, 30);
+            workbook.CurrentWorksheet.SetColumnWidth(2, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(3, 65);
+            workbook.CurrentWorksheet.SetColumnWidth(4, 30);
+            workbook.CurrentWorksheet.SetColumnWidth(5, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(6, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(7, 12);
+
+            workbook.CurrentWorksheet.AddCell("OS", "A1");
+            workbook.CurrentWorksheet.AddCell("Nome Estrutura", "B1");
+            workbook.CurrentWorksheet.AddCell("Serviço", "C1");
+            workbook.CurrentWorksheet.AddCell("Cartão", "D1");
+            workbook.CurrentWorksheet.AddCell("Membro", "E1");
+            workbook.CurrentWorksheet.AddCell("Inicio", "F1");
+            workbook.CurrentWorksheet.AddCell("Finalização", "G1");
+            workbook.CurrentWorksheet.AddCell("Total (h:m)", "H1");
+
+            int currentCellNumber = 2;
+            foreach (var board in boardsList)
+            {
+                var cardsQuery = await DatabaseUtils.CardsCollection(db).FindAsync(Builders<TrelloCard>.Filter.Empty);
+                var cards = await cardsQuery.ToListAsync();
+                SortCards(cards);
+                foreach (var card in cards)
+                {
+                    var firstCellNumber = currentCellNumber;
+                    GetCardService(card, out string cardName, out string service);
+                    workbook.CurrentWorksheet.AddCell(board.Name, $"B{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(service, $"C{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"D{currentCellNumber}");
+
+                    var cardMembers = new Dictionary<string, TrelloMember>();
+                    foreach (var timer in card.Timers)
+                    {
+                        cardMembers.TryAdd(timer.StartMember.Id, timer.StartMember);
+                    }
+                    var memberIndex = 0;
+
+                    foreach (var member in cardMembers)
+                    {
+                        workbook.CurrentWorksheet.AddCell(board.Name, $"B{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(service, $"C{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"D{currentCellNumber}");
+                        var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
+
+                        if (mTimers.Count > 0)
+                        {
+#if DEBUG
+                            var firstTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.FirstOrDefault().Start, TimeZoneInfo.Local);
+                            var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.Local);
+#else
+                        var firstTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.FirstOrDefault().Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+                        var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+#endif
+
+                            workbook.CurrentWorksheet.AddCell(member.Value.Name, $"E{currentCellNumber}");
+                            mTimers.Sort((prev, next) => prev.Start.CompareTo(next.Start));
+                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), $"F{currentCellNumber}");
+                            if (mTimers.LastOrDefault().State == TimeState.STOPPED)
+                            {
+                                workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), $"G{currentCellNumber}");
+                            }
+                            else
+                            {
+                                workbook.CurrentWorksheet.AddCell("", $"G{currentCellNumber}");
+                            }
+                            TimeSpan total = SumTimers(mTimers);
+                            workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), $"H{currentCellNumber}");
+
+                            if (memberIndex < cardMembers.Count - 1)
+                            {
+                                currentCellNumber += 1;
+                            }
+                            memberIndex += 1;
+                        }
+                    }
+                    currentCellNumber += 1;
+                }
+
+            }
+            var itemsStyle = new Style();
+            itemsStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            itemsStyle.CurrentCellXf.VerticalAlign = CellXf.VerticalAlignValue.center;
+            itemsStyle.CurrentBorder.BottomStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.TopStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.RightStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.LeftStyle = Border.StyleValue.thin;
+            itemsStyle.CurrentBorder.BottomColor = "000000";
+            itemsStyle.CurrentBorder.TopColor = "000000";
+            itemsStyle.CurrentBorder.RightColor = "000000";
+            itemsStyle.CurrentBorder.LeftColor = "000000";
+            workbook.CurrentWorksheet.SetStyle($"A2:H{currentCellNumber}", itemsStyle);
+            
+            workbook.Save();
+
+            var f = System.IO.File.Open(fileName, FileMode.Open);
+            byte[] bytes = new byte[f.Length];
+            f.Read(bytes, 0, Convert.ToInt32(f.Length));
+            f.Close();
+            return bytes;
+        }
+
         public static byte[] GetExcelLocal(string boardId, MongoClient mDbClient, out string fileName)
         {
             var boardsCollection = DatabaseUtils.BoardsCollection(mDbClient);
@@ -420,7 +531,7 @@ namespace CronoLog.Controllers
             var cardNameStyle = new Style();
             cardNameStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.left;
             cardNameStyle.Append(BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle($"B6:B{currentCellNumber - 1 }", cardNameStyle);
+            workbook.CurrentWorksheet.SetStyle($"B6:B{currentCellNumber - 1}", cardNameStyle);
 
             var spacerCellStyle = new Style();
             spacerCellStyle.Append(borderStyle);
