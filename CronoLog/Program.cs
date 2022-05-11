@@ -19,7 +19,8 @@ namespace CronoLog
 #if DEBUG
 
 #else
-                    var port = int.Parse(Environment.GetEnvironmentVariable("PORT"));
+                    var portEnv = Environment.GetEnvironmentVariable("PORT");
+                    int port = portEnv is not null ? int.Parse(portEnv) : 5000;
                     webBuilder.UseUrls($"http://*:{port}");
 #endif
                     webBuilder.UseStartup<Startup>();
