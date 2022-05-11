@@ -224,7 +224,7 @@ namespace CronoLog.Controllers
             var boards = await DatabaseUtils.BoardsCollection(db).FindAsync(Builders<TrelloBoard>.Filter.Empty);
             var boardsList = await boards.ToListAsync();
 
-            string fileName = "Resumo Torres.xlsx";
+            string fileName = "wwwroot/Resumo-Torres.xlsx";
             Workbook workbook = new(fileName, "Detalhes");
 
             workbook.CurrentWorksheet.SetColumnWidth(0, 12);
@@ -236,14 +236,14 @@ namespace CronoLog.Controllers
             workbook.CurrentWorksheet.SetColumnWidth(6, 12);
             workbook.CurrentWorksheet.SetColumnWidth(7, 12);
 
-            workbook.CurrentWorksheet.AddCell("OS", "A1");
-            workbook.CurrentWorksheet.AddCell("Nome Estrutura", "B1");
-            workbook.CurrentWorksheet.AddCell("Serviço", "C1");
-            workbook.CurrentWorksheet.AddCell("Cartão", "D1");
-            workbook.CurrentWorksheet.AddCell("Membro", "E1");
-            workbook.CurrentWorksheet.AddCell("Inicio", "F1");
-            workbook.CurrentWorksheet.AddCell("Finalização", "G1");
-            workbook.CurrentWorksheet.AddCell("Total (h:m)", "H1");
+            workbook.CurrentWorksheet.AddCell("OS", 0, 1);
+            workbook.CurrentWorksheet.AddCell("Nome Estrutura", 1, 1);
+            workbook.CurrentWorksheet.AddCell("Serviço", 2, 1);
+            workbook.CurrentWorksheet.AddCell("Cartão", 3, 1);
+            workbook.CurrentWorksheet.AddCell("Membro", 4, 1);
+            workbook.CurrentWorksheet.AddCell("Inicio", 5, 1);
+            workbook.CurrentWorksheet.AddCell("Finalização", 6, 1);
+            workbook.CurrentWorksheet.AddCell("Total (h:m)", 7, 1);
 
             int currentCellNumber = 2;
             foreach (var board in boardsList)
@@ -255,9 +255,9 @@ namespace CronoLog.Controllers
                 {
                     var firstCellNumber = currentCellNumber;
                     GetCardService(card, out string cardName, out string service);
-                    workbook.CurrentWorksheet.AddCell(board.Name, $"B{currentCellNumber}");
-                    workbook.CurrentWorksheet.AddCell(service, $"C{currentCellNumber}");
-                    workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"D{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(board.Name, 1, currentCellNumber);
+                    workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
+                    workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
 
                     var cardMembers = new Dictionary<string, TrelloMember>();
                     foreach (var timer in card.Timers)
@@ -268,9 +268,9 @@ namespace CronoLog.Controllers
 
                     foreach (var member in cardMembers)
                     {
-                        workbook.CurrentWorksheet.AddCell(board.Name, $"B{currentCellNumber}");
-                        workbook.CurrentWorksheet.AddCell(service, $"C{currentCellNumber}");
-                        workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"D{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(board.Name, 1, currentCellNumber);
+                        workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
+                        workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
                         var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
 
                         if (mTimers.Count > 0)
@@ -279,23 +279,23 @@ namespace CronoLog.Controllers
                             var firstTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.FirstOrDefault().Start, TimeZoneInfo.Local);
                             var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.Local);
 #else
-                        var firstTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.FirstOrDefault().Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
-                        var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+                            var firstTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.FirstOrDefault().Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
+                            var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
 #endif
 
-                            workbook.CurrentWorksheet.AddCell(member.Value.Name, $"E{currentCellNumber}");
+                            workbook.CurrentWorksheet.AddCell(member.Value.Name, 4, currentCellNumber);
                             mTimers.Sort((prev, next) => prev.Start.CompareTo(next.Start));
-                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), $"F{currentCellNumber}");
+                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), 5, currentCellNumber);
                             if (mTimers.LastOrDefault().State == TimeState.STOPPED)
                             {
-                                workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), $"G{currentCellNumber}");
+                                workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), 6, currentCellNumber);
                             }
                             else
                             {
-                                workbook.CurrentWorksheet.AddCell("", $"G{currentCellNumber}");
+                                workbook.CurrentWorksheet.AddCell("", 6, currentCellNumber);
                             }
                             TimeSpan total = SumTimers(mTimers);
-                            workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), $"H{currentCellNumber}");
+                            workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), 7, currentCellNumber);
 
                             if (memberIndex < cardMembers.Count - 1)
                             {
@@ -305,9 +305,11 @@ namespace CronoLog.Controllers
                         }
                     }
                     currentCellNumber += 1;
+                    if (currentCellNumber % 1000 == 0) { GC.Collect(); }
                 }
-
+                GC.Collect();
             }
+
             var itemsStyle = new Style();
             itemsStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
             itemsStyle.CurrentCellXf.VerticalAlign = CellXf.VerticalAlignValue.center;
@@ -320,8 +322,8 @@ namespace CronoLog.Controllers
             itemsStyle.CurrentBorder.RightColor = "000000";
             itemsStyle.CurrentBorder.LeftColor = "000000";
             workbook.CurrentWorksheet.SetStyle($"A2:H{currentCellNumber}", itemsStyle);
-            
             workbook.Save();
+            GC.Collect();
 
             //var f = System.IO.File.Open(fileName, FileMode.Open);
             //byte[] bytes = new byte[f.Length];

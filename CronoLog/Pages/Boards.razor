@@ -14,14 +14,17 @@
     <div class="cColumn">
         <h4>Baixar detalhes de todos os quadros</h4>
         <button  disabled=@btnDisabled @onclick="(e) => DownloadAllBoardsDetails()" style="width: 200px;">Download</button>
+        <a disabled=@fileNotReady href="Resumo-Torres.xlsx">Download Pronto</a>
     </div>
 </div>
 
 @code {
     protected bool btnDisabled { get; set; }
+    protected bool fileNotReady { get; set; }
     protected override async Task OnInitializedAsync()
     {
         btnDisabled = false;
+        fileNotReady = true;
         await base.OnInitializedAsync();
     }
 
@@ -58,9 +61,11 @@
     {
         btnDisabled = true;
         await Controllers.WebAppController.GetExcelAllBoardsDetails(MongoDb);
-        await BlazorDownloadFileService.AddBuffer(File.OpenRead("Resumo Torres.xlsx"));
-        await BlazorDownloadFileService.DownloadBinaryBuffers("Resumo Torres.xlsx");
+        //await BlazorDownloadFileService.AddBuffer(File.OpenRead("Resumo Torres.xlsx"));
+        //await BlazorDownloadFileService.DownloadBinaryBuffers("Resumo Torres.xlsx");
+
         //await BlazorDownloadFileService.DownloadFile("Resumo Torres.xlsx" , fileContents, "application/octet-stream");
         btnDisabled = false;
+        fileNotReady = false;
     }
 }
