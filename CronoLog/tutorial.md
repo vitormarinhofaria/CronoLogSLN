@@ -25,4 +25,4 @@
             - Adicionar o power-up criado
 
 
-- Para baixar o resumo de todos os quadros, acesse <https://trellotemporizador.herokuapp.com/boards>
+- Para baixar o resumo de todos os quadros, acesse <https://crono-log-sln-xhzp4ofqfa-uc.a.run.app/boards>
