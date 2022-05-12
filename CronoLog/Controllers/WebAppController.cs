@@ -260,14 +260,35 @@ namespace CronoLog.Controllers
                 var cardFilter = Builders<TrelloCard>.Filter.Eq("BoardId", board.Id);
                 var cardsQuery = await DatabaseUtils.CardsCollection(db).FindAsync(cardFilter);
                 var cards = await cardsQuery.ToListAsync();
+                
+                string boardOs = string.Empty;
+                var osCard = cards.Find(c => c.Name.Contains("[OS]"));
+                if (osCard is not null) boardOs = osCard.Name.Replace("[OS] -", "").Trim();
+                
+                cards = cards.FindAll(c =>
+                c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
+
                 SortCards(cards);
+
+                string boardName = board.Name.Replace("TORRE", "").Trim();
                 foreach (var card in cards)
                 {
                     var firstCellNumber = currentCellNumber;
                     GetCardService(card, out string cardName, out string service);
-                    workbook.CurrentWorksheet.AddCell(board.Name, 1, currentCellNumber);
+
+                    if (service == "OS")
+                    {
+                        continue;
+                    }
+
+                    workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
                     workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
                     workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
+
+                    if (boardOs != string.Empty)
+                    {
+                        workbook.CurrentWorksheet.AddCell(boardOs, 0, currentCellNumber);
+                    }
 
                     var cardMembers = new Dictionary<string, TrelloMember>();
                     foreach (var timer in card.Timers)
@@ -278,7 +299,12 @@ namespace CronoLog.Controllers
 
                     foreach (var member in cardMembers)
                     {
-                        workbook.CurrentWorksheet.AddCell(board.Name, 1, currentCellNumber);
+                        if (boardOs != string.Empty)
+                        {
+                            workbook.CurrentWorksheet.AddCell(boardOs, 0, currentCellNumber);
+                        }
+
+                        workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
                         var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
@@ -329,7 +355,7 @@ namespace CronoLog.Controllers
             itemsStyle.CurrentBorder.TopColor = "000000";
             itemsStyle.CurrentBorder.RightColor = "000000";
             itemsStyle.CurrentBorder.LeftColor = "000000";
-            workbook.CurrentWorksheet.SetStyle($"A1:H{currentCellNumber}", itemsStyle);
+            workbook.CurrentWorksheet.SetStyle($"A2:H{currentCellNumber}", itemsStyle);
             workbook.Save();
             GC.Collect();
         }
@@ -708,9 +734,10 @@ namespace CronoLog.Controllers
             service = "";
             if (initPos != -1 && endPos != -1)
             {
-                service = card.Name.Substring(initPos + 1, endPos - 1).Trim();
+                service = card.Name.Substring(initPos + 1, endPos - 1).Trim().ToLower();
+                service.Remove(0, 1);
+                service = service[0].ToString().ToUpper() + service.Remove(0, 1);
                 cardName = cardName.Replace($"[{service}] - ", "");
-                // cardName = cardName.Replace($"-", "");
             }
         }
 
