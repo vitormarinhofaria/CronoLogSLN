@@ -283,6 +283,17 @@ namespace CronoLog.Controllers
                 SortCards(cards);
 
                 string boardName = board.Name.Replace("TORRE", "").Trim();
+                if (boardName.Contains("OS "))
+                {
+                    var nameSplit = boardName.Split(" ");
+                    try
+                    {
+                        int osNumber = int.Parse(nameSplit[1]);
+                        boardOs = $"{osNumber}";
+                        boardName = boardName.Replace($"OS {boardOs} -", "").Trim();
+                    }
+                    catch (Exception) { }
+                }
                 foreach (var card in cards)
                 {
                     var firstCellNumber = currentCellNumber;
