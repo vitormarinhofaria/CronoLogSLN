@@ -6,21 +6,22 @@
 @inject MongoClient MongoDb
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 
-<div style="margin-top: 8px; display: flex; justify-content: center;" class="cBackground">
-    <div class="cColumn">
+<div style="margin-top: 8px; display: flex; align-items: center; flex-direction: column" class="cBackground">
+    <div class="cColumn" style="margin-top: 8px; display: flex; justify-content: center; align-items: center; flex-direction: column">
         <h4>Baixar resumo de todos os quadros</h4>
         <button  disabled=@btnDisabled @onclick="(e) => DownloadAllBoards()" style="width: 200px;">Download</button>
     </div>
-    <div class="cColumn">
+    <div class="cColumn" style="margin-top: 8px; display: flex; justify-content: center; align-items: center; flex-direction: column">
         <h4>Baixar detalhes de todos os quadros</h4>
-        <button  disabled=@btnDisabled @onclick="(e) => DownloadAllBoardsDetails()" style="width: 200px;">Download</button>
-        <a disabled=@fileNotReady href="Resumo-Torres.xlsx">Download Pronto</a>
+        <button  disabled=@btnDisabled @onclick="(e) => DownloadAllBoardsDetails()" style="width: 200px;">Gerar</button>
+        <a disabled=@fileNotReady href="Resumo-Torres.xlsx">@DownloadStatus</a>
     </div>
 </div>
 
 @code {
     protected bool btnDisabled { get; set; }
     protected bool fileNotReady { get; set; }
+    protected string DownloadStatus { get; set; } = "";
     protected override async Task OnInitializedAsync()
     {
         btnDisabled = false;
@@ -63,10 +64,7 @@
         Console.WriteLine("Gerando arquivo...");
         await Controllers.WebAppController.GetExcelAllBoardsDetails(MongoDb);
         Console.WriteLine("Arquivo gerado!");
-        //await BlazorDownloadFileService.AddBuffer(File.OpenRead("Resumo Torres.xlsx"));
-        //await BlazorDownloadFileService.DownloadBinaryBuffers("Resumo Torres.xlsx");
-
-        //await BlazorDownloadFileService.DownloadFile("Resumo Torres.xlsx" , fileContents, "application/octet-stream");
+        DownloadStatus = "Download";
         btnDisabled = false;
         fileNotReady = false;
     }
