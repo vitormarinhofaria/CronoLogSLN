@@ -31,21 +31,23 @@ namespace CronoLog.Controllers
         [HttpPost("board-load")]
         public async Task<IActionResult> BoardLoad(BoardLoadData boardData)
         {
-            var collection = BoardsCollection();
+            var boardsCollection = BoardsCollection();
 
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", boardData.Id);
-            var board = await collection.Find(boardFilter).FirstOrDefaultAsync();
+            var board = await boardsCollection.Find(boardFilter).FirstOrDefaultAsync();
 
             var members = boardData.Members.ConvertAll(e => new TrelloMember(e.Id, e.Name));
             if (board == null)
             {
                 board = new TrelloBoard(boardData.Id, boardData.Name, members);
-                collection.InsertOne(board);
+                boardsCollection.InsertOne(board);
             }
             else
             {
                 var updateDefinition = Builders<TrelloBoard>.Update.Set("Members", members);
-                await collection.FindOneAndUpdateAsync(boardFilter, updateDefinition);
+                await boardsCollection.FindOneAndUpdateAsync(boardFilter, updateDefinition);
+                updateDefinition = Builders<TrelloBoard>.Update.Set("Name", boardData.Name);
+                await boardsCollection.FindOneAndUpdateAsync(boardFilter, updateDefinition);
 
                 var cardsCollection = CardsCollection();
                 var cardsFilter = Builders<TrelloCard>.Filter.Eq("BoardId", board.Id);
