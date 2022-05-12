@@ -757,10 +757,14 @@ namespace CronoLog.Controllers
             service = "";
             if (initPos != -1 && endPos != -1)
             {
-                service = card.Name.Substring(initPos + 1, endPos - 1).Trim().ToLower();
-                service.Remove(0, 1);
-                service = service[0].ToString().ToUpper() + service.Remove(0, 1);
-                cardName = cardName.Replace($"[{service}] - ", "");
+                service = card.Name.Substring(initPos + 1, endPos - 1).Trim();
+                
+                cardName = cardName.Replace($"[{service}] - ", "").Trim();
+                cardName = cardName.Replace($"[{service}]-", "").Trim();
+                cardName = cardName.Replace($"[{service}]", "").Trim();
+
+                service = service[0].ToString().ToUpper() + service.Remove(0, 1).ToLower();
+                service = service.Trim();
             }
         }
 
