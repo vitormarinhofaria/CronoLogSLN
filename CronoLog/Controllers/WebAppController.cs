@@ -225,10 +225,11 @@ namespace CronoLog.Controllers
             var boardsList = await boards.ToListAsync();
 
             string fileName = "wwwroot/Resumo-Torres.xlsx";
+            System.IO.File.Delete(fileName);
             Workbook workbook = new(fileName, "Detalhes");
 
             workbook.CurrentWorksheet.SetColumnWidth(0, 12);
-            workbook.CurrentWorksheet.SetColumnWidth(1, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(1, 18);
             workbook.CurrentWorksheet.SetColumnWidth(2, 12);
             workbook.CurrentWorksheet.SetColumnWidth(3, 65);
             workbook.CurrentWorksheet.SetColumnWidth(4, 30);
@@ -236,19 +237,28 @@ namespace CronoLog.Controllers
             workbook.CurrentWorksheet.SetColumnWidth(6, 12);
             workbook.CurrentWorksheet.SetColumnWidth(7, 12);
 
-            workbook.CurrentWorksheet.AddCell("OS", 0, 1);
-            workbook.CurrentWorksheet.AddCell("Nome Estrutura", 1, 1);
-            workbook.CurrentWorksheet.AddCell("Serviço", 2, 1);
-            workbook.CurrentWorksheet.AddCell("Cartão", 3, 1);
-            workbook.CurrentWorksheet.AddCell("Membro", 4, 1);
-            workbook.CurrentWorksheet.AddCell("Inicio", 5, 1);
-            workbook.CurrentWorksheet.AddCell("Finalização", 6, 1);
-            workbook.CurrentWorksheet.AddCell("Total (h:m)", 7, 1);
+            workbook.CurrentWorksheet.AddCell("OS", 0, 0);
+            workbook.CurrentWorksheet.AddCell("Nome Estrutura", 1, 0);
+            workbook.CurrentWorksheet.AddCell("Serviço", 2, 0);
+            workbook.CurrentWorksheet.AddCell("Cartão", 3, 0);
+            workbook.CurrentWorksheet.AddCell("Membro", 4, 0);
+            workbook.CurrentWorksheet.AddCell("Inicio", 5, 0);
+            workbook.CurrentWorksheet.AddCell("Finalização", 6, 0);
+            workbook.CurrentWorksheet.AddCell("Total (h:m)", 7, 0);
+            var boardHeadStyle = new Style();
+            boardHeadStyle.CurrentFont.Bold = true;
+            boardHeadStyle.CurrentFont.Size = 11;
+            boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
+            boardHeadStyle.Append(BasicStyles.ColorizedBackground("A6A6A6"));
+            boardHeadStyle.Append(BasicStyles.BorderFrame);
+            workbook.CurrentWorksheet.SetStyle("A1:H1", boardHeadStyle);
 
-            int currentCellNumber = 2;
+            int currentCellNumber = 1;
             foreach (var board in boardsList)
             {
-                var cardsQuery = await DatabaseUtils.CardsCollection(db).FindAsync(Builders<TrelloCard>.Filter.Empty);
+                var cardFilter = Builders<TrelloCard>.Filter.Eq("BoardId", board.Id);
+                var cardsQuery = await DatabaseUtils.CardsCollection(db).FindAsync(cardFilter);
                 var cards = await cardsQuery.ToListAsync();
                 SortCards(cards);
                 foreach (var card in cards)
@@ -305,9 +315,7 @@ namespace CronoLog.Controllers
                         }
                     }
                     currentCellNumber += 1;
-                    if (currentCellNumber % 1000 == 0) { GC.Collect(); }
                 }
-                GC.Collect();
             }
 
             var itemsStyle = new Style();
@@ -321,15 +329,9 @@ namespace CronoLog.Controllers
             itemsStyle.CurrentBorder.TopColor = "000000";
             itemsStyle.CurrentBorder.RightColor = "000000";
             itemsStyle.CurrentBorder.LeftColor = "000000";
-            workbook.CurrentWorksheet.SetStyle($"A2:H{currentCellNumber}", itemsStyle);
+            workbook.CurrentWorksheet.SetStyle($"A1:H{currentCellNumber}", itemsStyle);
             workbook.Save();
             GC.Collect();
-
-            //var f = System.IO.File.Open(fileName, FileMode.Open);
-            //byte[] bytes = new byte[f.Length];
-            //f.Read(bytes, 0, Convert.ToInt32(f.Length));
-            //f.Close();
-            //return bytes;
         }
 
         public static byte[] GetExcelLocal(string boardId, MongoClient mDbClient, out string fileName)
