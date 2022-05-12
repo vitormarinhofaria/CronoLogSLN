@@ -260,11 +260,23 @@ namespace CronoLog.Controllers
                 var cardFilter = Builders<TrelloCard>.Filter.Eq("BoardId", board.Id);
                 var cardsQuery = await DatabaseUtils.CardsCollection(db).FindAsync(cardFilter);
                 var cards = await cardsQuery.ToListAsync();
-                
+
                 string boardOs = string.Empty;
-                var osCard = cards.Find(c => c.Name.Contains("[OS]"));
-                if (osCard is not null) boardOs = osCard.Name.Replace("[OS] -", "").Trim();
-                
+                Parallel.ForEach(cards, (c, token) =>
+                {
+                    if (c.Name.Contains("[OS] -")) { boardOs = c.Name.Replace("[OS] -", "").Trim(); }
+                    else if (c.Name.Contains("OS "))
+                    {
+                        var nameSplit = c.Name.Split(" ");
+                        try
+                        {
+                            int osNumber = int.Parse(nameSplit[1]);
+                            boardOs = $"{osNumber}";
+                        }
+                        catch (Exception) { }
+                    }
+                });
+
                 cards = cards.FindAll(c =>
                 c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
 
