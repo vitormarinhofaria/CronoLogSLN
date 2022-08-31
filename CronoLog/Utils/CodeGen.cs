@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using CronoLog.Utils;
 
@@ -12,8 +11,6 @@ namespace CronoLog
         }
         private static void GenJSPropFile()
         {
-            // const TRELLO_TIMER = { API_URL: "https://trello-timer.herokuapp.com" }
-            // const CRONO_LOG_CDN = "https://trello-timer.herokuapp.com"
             string[] fileContent = {
                 "const TRELLO_TIMER = { API_URL: '" + ApiUtils.API_URL + "' }",
                 "const CRONO_LOG_CDN = '" + ApiUtils.API_URL + "'"
