@@ -302,14 +302,14 @@ async function InitBoardButtons(t, opts) {
     let members = board.members.map((member) => { return { id: member.id, name: member.fullName } });
     let jsonBody = JSON.stringify({ id: board.id, name: board.name, members, cards });
 
-    let response = await fetch(`${TRELLO_TIMER.API_URL}/CardTime/board-load`, {
+    fetch(`${TRELLO_TIMER.API_URL}/CardTime/board-load`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         body: jsonBody
-    });
+    }).then(response => console.log(response)).catch(e => console.log(e));
     return [{
         // we can either provide a button that has a callback function
         icon: Icons.page_next,
