@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace CronoLog.Utils
 {
@@ -31,23 +32,37 @@ namespace CronoLog.Utils
         }
         public static DateTime ToBrSpTimezone(DateTime input)
         {
+            if (input.Kind == DateTimeKind.Utc){
+                var output = TimeZoneInfo.ConvertTimeFromUtc(input, GetBrSpTimezone());
+                return  output;
+            }
+            else
+                return input;
+
 #if DEBUG
-            return TimeZoneInfo.ConvertTimeFromUtc(input, TimeZoneInfo.Local);
 #else
-            return TimeZoneInfo.ConvertTimeFromUtc(input, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
 #endif
         }
         public static DateTime ToDbSaveTime(DateTime date)
         {
+            var tz = GetBrSpTimezone();
             if (date.Kind == DateTimeKind.Utc)
             {
                 return date;
             }
             else
             {
-                date = date.AddHours(3);
-                return date.ToUniversalTime();
+                return TimeZoneInfo.ConvertTimeToUtc(date, GetBrSpTimezone());
             }
+        }
+
+        public static TimeZoneInfo GetBrSpTimezone()
+        {
+#if DEBUG
+            return TimeZoneInfo.Local;
+#else
+            return TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+#endif
         }
     }
 }
