@@ -16,7 +16,7 @@
 
             <div class="cRow justify-content-center align-items-center">
                 <label class="m-0 mr-2">Inicio:</label>
-                <InputDateTime id="createdDate" class="form-control" @bind-Value="updateRequest.Start" />
+                <input @bind-value=@updateRequest.Start id="createdDate" class="form-control" type="datetime-local" /> 
             </div>
 
             <div class="cRow justify-content-center align-items-center">
@@ -29,7 +29,7 @@
                 }
                 else
                 {
-                    <InputDateTime id="endDate" class="form-control" @bind-Value="updateRequest.End" />
+                    <input @bind-value=@updateRequest.End id="endDate" class="form-control" type="datetime-local" /> 
                 }
             </div>
             @if (Chrono.State != TimeState.RUNNING)
