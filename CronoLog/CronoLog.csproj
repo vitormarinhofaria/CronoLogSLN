@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>a3d6454e-b49d-418c-b725-a40c549d5ef7</UserSecretsId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
-    <PackageReference Include="NanoXLSX" Version="1.8.6" />
+    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="NanoXLSX" Version="1.8.7" />
   </ItemGroup>
 
 </Project>
