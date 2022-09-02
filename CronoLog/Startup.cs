@@ -27,9 +27,9 @@ namespace CronoLog
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHttpClient();
-            services.AddSingleton(provider =>
+            services.AddSingleton<IMongoClient>(provider =>
             {
-                var client = new MongoClient(Environment.GetEnvironmentVariable("MONGO_STRING"));
+                IMongoClient client = new MongoClient(Environment.GetEnvironmentVariable("MONGO_STRING"));
                 return client;
             });
             services.AddCors(options =>

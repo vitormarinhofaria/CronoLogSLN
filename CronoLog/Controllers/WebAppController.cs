@@ -20,9 +20,9 @@ namespace CronoLog.Controllers
     [EnableCors("TrelloHostPolicy")]
     public class WebAppController : ControllerBase
     {
-        private readonly MongoClient mDbClient;
+        private readonly IMongoClient mDbClient;
 
-        public WebAppController(MongoClient mongoClient)
+        public WebAppController(IMongoClient mongoClient)
         {
             mDbClient = mongoClient;
         }
@@ -219,7 +219,7 @@ namespace CronoLog.Controllers
             System.IO.File.Delete(fileName);
             return new JsonResult(bytes);
         }
-        public static async Task GetExcelAllBoardsDetails(MongoClient db)
+        public static async Task GetExcelAllBoardsDetails(IMongoClient db)
         {
             var boards = await DatabaseUtils.BoardsCollection(db).FindAsync(Builders<TrelloBoard>.Filter.Empty);
             var boardsList = await boards.ToListAsync();
@@ -383,7 +383,7 @@ namespace CronoLog.Controllers
             GC.Collect();
         }
 
-        public static byte[] GetExcelLocal(string boardId, MongoClient mDbClient, out string fileName)
+        public static byte[] GetExcelLocal(string boardId, IMongoClient mDbClient, out string fileName)
         {
             var boardsCollection = DatabaseUtils.BoardsCollection(mDbClient);
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", boardId);
