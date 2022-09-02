@@ -278,7 +278,12 @@ namespace CronoLog.Controllers
                 });
 
                 cards = cards.FindAll(c =>
-                c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
+                {
+                    return c.Active &&
+                        !c.CurrentList.Name.ToLower().Contains("dúvidas") &&
+                        !c.CurrentList.Name.ToLower().Contains("duvidas") &&
+                        !c.CurrentList.Name.ToLower().Contains("geral");
+                });
 
                 SortCards(cards);
 
@@ -297,7 +302,7 @@ namespace CronoLog.Controllers
                 foreach (var card in cards)
                 {
                     var firstCellNumber = currentCellNumber;
-                    
+
                     var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
                     if (cardTagPattern.Type != CardTagType.FULL_SAVE)
                     {
@@ -305,13 +310,12 @@ namespace CronoLog.Controllers
                     }
 
                     var (cardService, cardName) = CardUtils.GetCardService_Name(card.Name, cardTagPattern);
-                    //GetCardServiceAndTag(card, out string cardName, out string service);
 
                     if (cardService == "OS")
                     {
                         continue;
                     }
-                    
+
                     workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
                     workbook.CurrentWorksheet.AddCell(cardService, 2, currentCellNumber);
                     workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
@@ -764,7 +768,7 @@ namespace CronoLog.Controllers
             if (initPos != -1 && endPos != -1)
             {
                 service = card.Name.Substring(initPos + 1, endPos - 1).Trim();
-                
+
                 cardName = cardName.Replace($"[{service}] - ", "").Trim();
                 cardName = cardName.Replace($"[{service}]-", "").Trim();
                 cardName = cardName.Replace($"[{service}]", "").Trim();
