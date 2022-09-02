@@ -76,7 +76,13 @@ namespace CronoLog.Pages
 
             foreach (var card in cards)
             {
-                if (!card.CurrentList.Name.ToLower().Contains("geral") && !card.CurrentList.Name.ToLower().Contains("dúvidas") && !card.CurrentList.Name.ToLower().Contains("duvidas") && card.Active)
+                var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
+                if(cardTagPattern.Type == CardTagType.NONE)
+                    continue;
+                
+                if (!card.CurrentList.Name.ToLower().Contains("geral") && 
+                    !card.CurrentList.Name.ToLower().Contains("dúvidas") && 
+                    !card.CurrentList.Name.ToLower().Contains("duvidas") && card.Active)
                 {
                     foreach (var cTimer in card.Timers)
                     {
