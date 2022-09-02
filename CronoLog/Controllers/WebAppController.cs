@@ -297,15 +297,23 @@ namespace CronoLog.Controllers
                 foreach (var card in cards)
                 {
                     var firstCellNumber = currentCellNumber;
-                    GetCardService(card, out string cardName, out string service);
-
-                    if (service == "OS")
+                    
+                    var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
+                    if (cardTagPattern.Type != CardTagType.FULL_SAVE)
                     {
                         continue;
                     }
 
+                    var (cardService, cardName) = CardUtils.GetCardService_Name(card.Name, cardTagPattern);
+                    //GetCardServiceAndTag(card, out string cardName, out string service);
+
+                    if (cardService == "OS")
+                    {
+                        continue;
+                    }
+                    
                     workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
-                    workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
+                    workbook.CurrentWorksheet.AddCell(cardService, 2, currentCellNumber);
                     workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
 
                     if (boardOs != string.Empty)
@@ -328,7 +336,7 @@ namespace CronoLog.Controllers
                         }
 
                         workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
-                        workbook.CurrentWorksheet.AddCell(service, 2, currentCellNumber);
+                        workbook.CurrentWorksheet.AddCell(cardService, 2, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
                         var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
 
@@ -450,8 +458,14 @@ namespace CronoLog.Controllers
             foreach (var card in cards)
             {
                 var firstCellNumber = currentCellNumber;
-                GetCardService(card, out string cardName, out string service);
-                workbook.CurrentWorksheet.AddCell(service, $"A{currentCellNumber}");
+
+                var cardServicePattern = CardUtils.MatchTagPattern(card.Name);
+                if (cardServicePattern.Type != CardTagType.FULL_SAVE) continue;
+
+                var (cardService, cardName) = CardUtils.GetCardService_Name(card.Name, cardServicePattern);
+                //GetCardServiceAndTag(card, out string cardName, out string service);
+
+                workbook.CurrentWorksheet.AddCell(cardService, $"A{currentCellNumber}");
                 workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"B{currentCellNumber}");
 
                 var cardMembers = new Dictionary<string, TrelloMember>();
@@ -464,10 +478,6 @@ namespace CronoLog.Controllers
                 foreach (var member in cardMembers)
                 {
                     var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
-
-                    // foreach(var tz in timeZones){
-                    // Console.WriteLine(tz);
-                    // }
 
                     if (mTimers.Count > 0)
                     {
@@ -555,7 +565,11 @@ namespace CronoLog.Controllers
             List<string> spacerCells = new();
             foreach (var card in cards)
             {
-                var cardRow = GetCardRow(card);
+                var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
+                if (cardTagPattern.Type != CardTagType.FULL_SAVE) continue;
+
+                var cardRow = GetCardRow(card, cardTagPattern);
+
                 if (cardRow["servico"].ToString() != prevService && count > 0)
                 {
                     var l = new List<string>() { "", "", " ", " ", " " };
@@ -688,11 +702,11 @@ namespace CronoLog.Controllers
             }
         }
 
-        private static Dictionary<string, object> GetCardRow(TrelloCard card)
+        private static Dictionary<string, object> GetCardRow(TrelloCard card, CardTagPattern tagPattern)
         {
 
             var list = new Dictionary<string, object>();
-            GetCardService(card, out string cardName, out string service);
+            var (service, cardName) = CardUtils.GetCardService_Name(card.Name, tagPattern);
 
             list.Add("servico", service);
             list.Add("cartao", cardName.Trim());
@@ -703,11 +717,7 @@ namespace CronoLog.Controllers
             }
             else
             {
-#if DEBUG
-                var firstTimerDate = TimeZoneInfo.ConvertTimeFromUtc(firstTimer.Start, TimeZoneInfo.Local);
-#else
-                var firstTimerDate = TimeZoneInfo.ConvertTimeFromUtc(firstTimer.Start, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
-#endif
+                var firstTimerDate = DateUtils.ToBrSpTimezone(firstTimer.Start);
                 list.Add("inicio", GetBrTimeStr(firstTimerDate));
             }
             var lastTimer = card.Timers.LastOrDefault();
@@ -719,11 +729,7 @@ namespace CronoLog.Controllers
             {
                 if (lastTimer.State == TimeState.STOPPED)
                 {
-#if DEBUG
-                    var lastTimerDate = TimeZoneInfo.ConvertTimeFromUtc(lastTimer.End, TimeZoneInfo.Local);
-#else
-                    var lastTimerDate = TimeZoneInfo.ConvertTimeFromUtc(lastTimer.End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
-#endif
+                    var lastTimerDate = DateUtils.ToBrSpTimezone(lastTimer.End);
                     list.Add("finalizacao", GetBrTimeStr(lastTimerDate));
                 }
                 else
@@ -749,7 +755,7 @@ namespace CronoLog.Controllers
             return totalTime;
         }
 
-        private static void GetCardService(TrelloCard card, out string cardName, out string service)
+        private static void GetCardServiceAndTag(TrelloCard card, out string cardName, out string service)
         {
             cardName = card.Name;
             var initPos = cardName.IndexOf('[');

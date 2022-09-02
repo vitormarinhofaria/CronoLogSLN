@@ -4,7 +4,6 @@ using CronoLog.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,26 +13,27 @@ namespace CronoLog.Pages
     public partial class Board
     {
         [Parameter]
-        public string BoardId { get; set; }
+        public string? BoardId { get; set; }
         [Parameter]
-        public string MemberId { get; set; }
+        public string? MemberId { get; set; }
         [Inject]
-        public MongoClient DbClient { get; set; }
+        public IMongoClient DbClient { get; set; }
         [Inject]
-        IBlazorDownloadFileService BlazorDownloadFileService { get; set; }
+        IBlazorDownloadFileService? BlazorDownloadFileService { get; set; }
         [Inject]
-        public IJSRuntime Js { get; set; }
+        public IJSRuntime? Js { get; set; }
         [Inject]
-        public NavigationManager Navigation { get; set; }
+        public NavigationManager? Navigation { get; set; }
 
-        public FullBoardData BoardData { get; set; }
-        protected string CurrentCardId { get; set; }
-        protected string CurrentMemberId { get; set; }
+        public FullBoardData? BoardData { get; set; }
+        protected string? CurrentCardId { get; set; }
+        protected string? CurrentMemberId { get; set; }
 
-        private Dictionary<string, Dictionary<string, List<CardTime>>> CardMemberTimers { get; set; }
+        private Dictionary<string, Dictionary<string, List<CardTime>>>? CardMemberTimers { get; set; }
         public bool firstClick = true;
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             CurrentCardId = "";
             CurrentMemberId = "";
             CardMemberTimers = new();
@@ -58,7 +58,6 @@ namespace CronoLog.Pages
                 }
 
             }
-            await base.OnInitializedAsync();
         }
 
         private async Task GetFullBoardDataMulti()

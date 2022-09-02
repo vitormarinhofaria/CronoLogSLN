@@ -8,7 +8,7 @@ namespace CronoLog.Models
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public TrelloMember StartMember { get; set; }
-        public TrelloMember EndMember { get; set; }
+        public TrelloMember? EndMember { get; set; }
         public TimeState State { get; set; }
         public TrelloList List { get; set; }
         public CardTime(TrelloMember startMember, TrelloList list)
