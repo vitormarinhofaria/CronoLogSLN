@@ -19,8 +19,8 @@ namespace CronoLog.Controllers
     [EnableCors("TrelloHostPolicy")]
     public class TimedController : ControllerBase
     {
-        private readonly MongoClient DbClient;
-        public TimedController([FromServices] MongoClient dbClient)
+        private readonly IMongoClient DbClient;
+        public TimedController([FromServices] IMongoClient dbClient)
         {
             DbClient = dbClient;
         }
