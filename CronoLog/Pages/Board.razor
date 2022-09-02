@@ -26,8 +26,7 @@
         </div>
 
         <div class="cCardGrid">
-            <Virtualize Items="BoardData?.Cards" Context="card">
-                @{
+                @foreach(var card in BoardData.Cards){
                 string cardClass = "cColumn nCard";
                 string cCardRowClass = "cRow cCardRow w-100";
                 if (CurrentCardId == card.Id)
@@ -106,7 +105,6 @@
                     }
                 </div>
             }
-        </Virtualize>
     </div>
     }
 </div>
