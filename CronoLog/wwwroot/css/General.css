@@ -74,6 +74,7 @@
     justify-content: center;
     border-radius: 15px;
     background-color: #585858;
+    transition: linear 120ms;
 }
 
     .nCard.selected {
