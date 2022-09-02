@@ -15,7 +15,7 @@ namespace CronoLog.Shared
     public partial class ChronoItem
     {
         [Inject]
-        public MongoClient DbClient { get; set; }
+        public IMongoClient DbClient { get; set; }
         [Parameter]
         public bool FirstClick { get; set; }
 
