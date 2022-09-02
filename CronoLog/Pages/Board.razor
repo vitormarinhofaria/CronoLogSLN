@@ -11,13 +11,13 @@
         <div class="cColumn justify-content-center align-items-center redContainer">
             <div class="cRow justify-content-between pr-4 pl-4 pt-3 pb-3 w-100">
                 <span class="oi oi-home" @onclick='(e) => Navigation.NavigateTo("/")'></span>
-                <h2 class="text-center">Informações do Quadro - @BoardData.BoardName</h2>
+                <h2 class="text-center">Informações do Quadro - @BoardData?.BoardName</h2>
                 <div class="cRow justify-content-center align-items-center p-0 m-0">
                     <div class="cRow justify-content-center align-items-center pr-3">
                         <span class="oi oi-reload hoverable" @onclick="(e) => RefreshPage()"></span>
                     </div>
                     <div class="cRow justify-content-center align-items-center nDownloadBtn text-center p-2 m-1"
-                         @onclick="(e) => { DownloadExcel(); }">
+                    @onclick="(e) => { DownloadExcel(); }">
                         <span class="oi oi-document"></span>
                         <label class="m-0 pl-1">Exportar Planilha</label>
                     </div>
@@ -26,8 +26,8 @@
         </div>
 
         <div class="cCardGrid">
-            @foreach (var card in BoardData.Cards)
-            {
+            <Virtualize Items="BoardData?.Cards" Context="card">
+                @{
                 string cardClass = "cColumn nCard";
                 string cCardRowClass = "cRow cCardRow w-100";
                 if (CurrentCardId == card.Id)
@@ -80,7 +80,7 @@
                                 @foreach (var chrono in CardMemberTimers[CurrentCardId][CurrentMemberId])
                                 {
                                     @if (lastDay.Day != chrono.Start.Day || counter == 0 || lastDay.Month != chrono.Start.Month ||
-                            lastDay.Year != chrono.Start.Year)
+                               lastDay.Year != chrono.Start.Year)
                                     {
                                         var day = chrono.Start.Day.ToString();
                                         var month = chrono.Start.Month.ToString();
@@ -99,14 +99,14 @@
                                     lastDay = chrono.Start;
                                     counter += 1;
                                     <ChronoItem @key="@chrono.Id" CardId="@CurrentCardId" Chrono="@chrono" Members="@BoardData.Members"
-                                                firstClick=@firstClick MemberId="@MemberId" RemoveChrono="@RemoveChronoFromList" />
+                        firstClick=@firstClick MemberId="@MemberId" RemoveChrono="@RemoveChronoFromList" />
                                 }
                             </div>
                         }
                     }
                 </div>
             }
-        </div>
+        </Virtualize>
+    </div>
     }
 </div>
-
