@@ -6,3 +6,4 @@
 .git
 app
 **/*.xlsx
+**/*.zip
