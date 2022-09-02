@@ -13,8 +13,8 @@ namespace CronoLog.Controllers
     [EnableCors("TrelloHostPolicy")]
     public class CardInfoBadgeController : ControllerBase
     {
-        private readonly MongoClient mDbClient;
-        public CardInfoBadgeController(MongoClient mongoClient)
+        private readonly IMongoClient mDbClient;
+        public CardInfoBadgeController(IMongoClient mongoClient)
         {
             mDbClient = mongoClient;
         }
@@ -28,7 +28,7 @@ namespace CronoLog.Controllers
 
             if (cib == null)
             {
-                return new JsonResult(new { }) { StatusCode = 404 };
+                return new JsonResult(new { });
             }
             else
             {
