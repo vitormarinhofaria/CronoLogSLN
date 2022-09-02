@@ -1,4 +1,5 @@
 ﻿using CronoLog.Models;
+using CronoLog.Utils;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -13,10 +14,10 @@ namespace CronoLog.Controllers
     [EnableCors("TrelloHostPolicy")]
     public class CardTimeController : ControllerBase
     {
-        private readonly MongoClient mDbClient;
-        public CardTimeController(MongoClient mongoClient)
+        private readonly IMongoClient mDbClient;
+        public CardTimeController(IMongoClient mongoClient)
         {
-            mDbClient = mongoClient;
+            mDbClient = mongoClient; 
         }
 
         private IMongoCollection<TrelloBoard> BoardsCollection()
@@ -79,11 +80,11 @@ namespace CronoLog.Controllers
 
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", cardData.Board.Id);
             TrelloBoard board = await boardsCollection.Find(boardFilter).FirstOrDefaultAsync();
-
+            
             if (card == null)
             {
                 card = new TrelloCard(cardData, list, member, cardData.Board.Id);
-
+                
                 if (board == null)
                 {
                     board = new TrelloBoard(cardData.Board.Id, cardData.Board.Name);
@@ -148,6 +149,11 @@ namespace CronoLog.Controllers
                 }
                 await cardsCollection.FindOneAndReplaceAsync(cardFilter, card);
             }
+            var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
+            if(cardTagPattern.Type == CardTagType.NONE)
+            {
+                return new JsonResult(new{ });
+            }
             return new JsonResult(card);
         }
 
@@ -171,7 +177,7 @@ namespace CronoLog.Controllers
                 }
             }
 
-            await CardsCollection().FindOneAndReplaceAsync(cardFilter, card);
+            await CardsCollection()!.FindOneAndReplaceAsync(cardFilter!, card);
         }
 
         [HttpPost("resume-stopwatch")]
