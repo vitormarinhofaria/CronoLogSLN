@@ -179,11 +179,15 @@ namespace CronoLog.Controllers
                 return new JsonResult("cne");
             }
         }
+
+        static Dictionary<string, TrelloMember> MembersCache = new();
+
         [HttpGet("excel/{boardId}")]
         public IActionResult GetExcel(string boardId)
         {
-            Stopwatch sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
+
             var boardsCollection = DatabaseUtils.BoardsCollection(mDbClient);
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", boardId);
             var board = boardsCollection.Find(boardFilter).FirstOrDefault();
@@ -193,6 +197,19 @@ namespace CronoLog.Controllers
             var cards = cardsCollection.Find(cardFilter).ToList();
             cards = cards.FindAll(c =>
                 c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
+            
+            // Update the name of the member in the timers with the Board database entry
+            cards.ForEach(card =>
+            {
+                card.Timers.ForEach(timer =>
+                {
+                    ReplaceMemberFromBoard(board, MembersCache, timer.StartMember);
+                    if (timer.EndMember is not null)
+                    {
+                        ReplaceMemberFromBoard(board, MembersCache, timer.EndMember);
+                    }
+                });
+            });
 
             string wbName = $"Resumo - {board.Name}";
             sw.Stop();
@@ -219,6 +236,24 @@ namespace CronoLog.Controllers
             System.IO.File.Delete(fileName);
             return new JsonResult(bytes);
         }
+
+        private static void ReplaceMemberFromBoard(TrelloBoard board, Dictionary<string, TrelloMember> membersCache, TrelloMember sMember)
+        {
+            if (membersCache.TryGetValue(sMember.Id, out TrelloMember? found))
+            {
+                sMember.Name = found!.Name;
+            }
+            else
+            {
+                var m = board.Members.Find(m => m.Id == sMember.Id);
+                if (m is not null)
+                {
+                    membersCache.Add(m.Id, m);
+                    sMember.Name = m.Name;
+                }
+            }
+        }
+
         public static async Task GetExcelAllBoardsDetails(IMongoClient db)
         {
             var boards = await DatabaseUtils.BoardsCollection(db).FindAsync(Builders<TrelloBoard>.Filter.Empty);
@@ -285,6 +320,19 @@ namespace CronoLog.Controllers
                         !c.CurrentList.Name.ToLower().Contains("geral");
                 });
 
+                // Update the name of the member in the timers with the Board database entry
+                cards.ForEach(card =>
+                {
+                    card.Timers.ForEach(timer =>
+                    {
+                        ReplaceMemberFromBoard(board, MembersCache, timer.StartMember);
+                        if (timer.EndMember is not null)
+                        {
+                            ReplaceMemberFromBoard(board, MembersCache, timer.EndMember);
+                        }
+                    });
+                    ReplaceMemberFromBoard(board, MembersCache, card.CurrentMember);
+                });
                 SortCards(cards);
 
                 string boardName = board.Name.Replace("TORRE", "").Trim();
@@ -406,6 +454,19 @@ namespace CronoLog.Controllers
             var cards = cardsCollection.Find(cardFilter).ToList();
             cards = cards.FindAll(c =>
                 c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
+            
+            // Update the name of the member in the timers with the Board database entry
+            cards.ForEach(card =>
+            {
+                card.Timers.ForEach(timer =>
+                {
+                    ReplaceMemberFromBoard(board, MembersCache, timer.StartMember);
+                    if (timer.EndMember is not null)
+                    {
+                        ReplaceMemberFromBoard(board, MembersCache, timer.EndMember);
+                    }
+                });
+            });
 
             string wbName = $"Resumo - {board.Name}";
 
