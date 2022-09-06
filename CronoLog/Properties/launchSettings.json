@@ -10,8 +10,7 @@
     "CronoLog": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "MONGO_STRING": "mongodb+srv://vitormf:<password>@cluster0.cf7ww.mongodb.net/test"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5000"
