@@ -180,8 +180,6 @@ namespace CronoLog.Controllers
             }
         }
 
-        static Dictionary<string, TrelloMember> MembersCache = new();
-
         [HttpGet("excel/{boardId}")]
         public IActionResult GetExcel(string boardId)
         {
@@ -197,8 +195,9 @@ namespace CronoLog.Controllers
             var cards = cardsCollection.Find(cardFilter).ToList();
             cards = cards.FindAll(c =>
                 c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
-            
+
             // Update the name of the member in the timers with the Board database entry
+            Dictionary<string, TrelloMember> MembersCache = new();
             cards.ForEach(card =>
             {
                 card.Timers.ForEach(timer =>
@@ -237,7 +236,7 @@ namespace CronoLog.Controllers
             return new JsonResult(bytes);
         }
 
-        private static void ReplaceMemberFromBoard(TrelloBoard board, Dictionary<string, TrelloMember> membersCache, TrelloMember sMember)
+        public static void ReplaceMemberFromBoard(TrelloBoard board, Dictionary<string, TrelloMember> membersCache, TrelloMember sMember)
         {
             if (membersCache.TryGetValue(sMember.Id, out TrelloMember? found))
             {
@@ -321,6 +320,7 @@ namespace CronoLog.Controllers
                 });
 
                 // Update the name of the member in the timers with the Board database entry
+                Dictionary<string, TrelloMember> MembersCache = new();
                 cards.ForEach(card =>
                 {
                     card.Timers.ForEach(timer =>
@@ -454,8 +454,9 @@ namespace CronoLog.Controllers
             var cards = cardsCollection.Find(cardFilter).ToList();
             cards = cards.FindAll(c =>
                 c.Active && !c.CurrentList.Name.ToLower().Contains("dúvidas") && !c.CurrentList.Name.ToLower().Contains("duvidas") && !c.CurrentList.Name.ToLower().Contains("geral"));
-            
+
             // Update the name of the member in the timers with the Board database entry
+            Dictionary<string, TrelloMember> MembersCache = new();
             cards.ForEach(card =>
             {
                 card.Timers.ForEach(timer =>
