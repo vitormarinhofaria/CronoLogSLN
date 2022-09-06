@@ -17,7 +17,7 @@ namespace CronoLog.Controllers
         private readonly IMongoClient mDbClient;
         public CardTimeController(IMongoClient mongoClient)
         {
-            mDbClient = mongoClient; 
+            mDbClient = mongoClient;
         }
 
         private IMongoCollection<TrelloBoard> BoardsCollection()
@@ -79,12 +79,21 @@ namespace CronoLog.Controllers
             TrelloCard card = await cardsCollection.Find(cardFilter).FirstOrDefaultAsync();
 
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", cardData.Board.Id);
-            TrelloBoard board = await boardsCollection.Find(boardFilter).FirstOrDefaultAsync();
-            
+            TrelloBoard? board = await boardsCollection.Find(boardFilter).FirstOrDefaultAsync();
+
+            if (board is not null)
+            {
+                var m = board.Members.Find(m => m.Id == member.Id);
+                if (m is not null)
+                {
+                    member.Name = m.Name;
+                }
+            }
+
             if (card == null)
             {
                 card = new TrelloCard(cardData, list, member, cardData.Board.Id);
-                
+
                 if (board == null)
                 {
                     board = new TrelloBoard(cardData.Board.Id, cardData.Board.Name);
@@ -150,9 +159,9 @@ namespace CronoLog.Controllers
                 await cardsCollection.FindOneAndReplaceAsync(cardFilter, card);
             }
             var cardTagPattern = CardUtils.MatchTagPattern(card.Name);
-            if(cardTagPattern.Type == CardTagType.NONE)
+            if (cardTagPattern.Type == CardTagType.NONE)
             {
-                return new JsonResult(new{ });
+                return new JsonResult(new { });
             }
             return new JsonResult(card);
         }
