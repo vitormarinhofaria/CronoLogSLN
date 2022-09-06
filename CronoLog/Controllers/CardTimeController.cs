@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MongoDB.Bson.Serialization.Serializers.SerializerHelper;
 
 namespace CronoLog.Controllers
 {
@@ -257,6 +259,18 @@ namespace CronoLog.Controllers
             var cardsCollection = CardsCollection();
             var cardFilter = Builders<TrelloCard>.Filter.Eq("Id", cardId);
             var card = await cardsCollection.Find(cardFilter).FirstOrDefaultAsync();
+
+            var board = await BoardsCollection().Find(Builders<TrelloBoard>.Filter.Eq("Id", card.BoardId)).FirstOrDefaultAsync();
+
+            Dictionary<string, TrelloMember> membersCache = new();
+            foreach(var timer in card.Timers)
+            {
+                WebAppController.ReplaceMemberFromBoard(board, membersCache, timer.StartMember);
+                if(timer.EndMember is not null)
+                {
+                    WebAppController.ReplaceMemberFromBoard(board, membersCache, timer.EndMember);
+                }
+            }
 
             return new JsonResult(card);
         }
