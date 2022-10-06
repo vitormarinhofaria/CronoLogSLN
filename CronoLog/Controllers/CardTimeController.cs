@@ -121,6 +121,9 @@ namespace CronoLog.Controllers
             else
             {
                 card.Name = cardData.Card.Name;
+
+                WebAppController.SortCardTimers(card);
+
                 var lastTime = card.Timers.LastOrDefault();
                 if (lastTime != null)
                 {

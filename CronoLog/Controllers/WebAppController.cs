@@ -459,6 +459,7 @@ namespace CronoLog.Controllers
             Dictionary<string, TrelloMember> MembersCache = new();
             cards.ForEach(card =>
             {
+                SortCardTimers(card);
                 card.Timers.ForEach(timer =>
                 {
                     ReplaceMemberFromBoard(board, MembersCache, timer.StartMember);
@@ -488,6 +489,14 @@ namespace CronoLog.Controllers
             f.Close();
             //System.IO.File.Delete(fileName);
             return bytes;
+        }
+
+        public static void SortCardTimers(TrelloCard card)
+        {
+            card.Timers.Sort((t1, t2) =>
+            {
+                return t1.Start.CompareTo(t2.Start);
+            });
         }
 
         private static void SecondPage(List<TrelloCard> cards, List<TrelloMember> members, string wbName, Workbook workbook)
@@ -556,7 +565,6 @@ namespace CronoLog.Controllers
 #endif
 
                         workbook.CurrentWorksheet.AddCell(member.Value.Name, $"C{currentCellNumber}");
-                        mTimers.Sort((prev, next) => prev.Start.CompareTo(next.Start));
                         workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), $"D{currentCellNumber}");
                         if (mTimers.LastOrDefault().State == TimeState.STOPPED)
                         {
@@ -687,6 +695,11 @@ namespace CronoLog.Controllers
                 new KeyValuePair<string, int>("[conferência]", 4),
                 new KeyValuePair<string, int>("[conferencia]", 4),
             };
+            
+            foreach(var card in cards)
+            {
+                SortCardTimers(card);
+            }
 
             cards.Sort((p, n) =>
             {
