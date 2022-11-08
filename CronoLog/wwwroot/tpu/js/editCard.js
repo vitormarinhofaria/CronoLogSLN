@@ -19,7 +19,7 @@ async function main() {
         });
     }
 
-    t.sizeTo(document.getElementById("timersContainer"));
+    t.sizeTo(document.body);
 }
 main();
 
