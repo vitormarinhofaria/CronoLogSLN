@@ -1,4 +1,4 @@
-var t = window.TrelloPowerUp.iframe();
+//var t = window.TrelloPowerUp.iframe();
 
 async function main() {
     let cardName = document.querySelector("#cardName");
@@ -19,7 +19,7 @@ async function main() {
         });
     }
 
-    t.sizeTo(document.body);
+    //t.sizeTo(document.body);
 }
 main();
 
