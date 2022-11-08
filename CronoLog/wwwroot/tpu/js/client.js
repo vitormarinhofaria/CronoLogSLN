@@ -383,13 +383,14 @@ async function InitCardButtons(t, options) {
     {
         icon: Icons.wrench,
         text: "Editar Tempo",
-        callback: (t, options) => {
+        callback: async (t, options) => {
             //return t.popup({
             //    title: "Editar Cartão",
             //    url: "editCard.html"
             //})
+            let card = await t.card("id", "name");
             return t.modal({
-                title: "Editar Cartão",
+                title: "Editar Cartão - " + card.name,
                 url: "editCard.html",
             })
         }
