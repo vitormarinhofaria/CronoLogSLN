@@ -1,3 +1,5 @@
+var t = window.TrelloPowerUp.iframe();
+
 async function main() {
     let cardName = document.querySelector("#cardName");
     let timersContainer = document.querySelector("#timersContainer");
@@ -16,6 +18,8 @@ async function main() {
             CreateTimerNode(e, listName, cardData, timersContainer, t);
         });
     }
+
+    t.sizeTo(document.body);
 }
 main();
 
