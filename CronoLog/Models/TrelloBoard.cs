@@ -12,6 +12,9 @@ namespace CronoLog.Models
         private List<TrelloMember> members = new();
         public string StopwatchList { get => stopWatchList.ToLower(); set => stopWatchList = value; }
         private string stopWatchList;
+
+        public Identificadores? Identifiers { get; set; }
+
         public TrelloBoard(string id, string name)
         {
             Id = id;
@@ -37,5 +40,14 @@ namespace CronoLog.Models
 
         public const string DefaultStopwatchList = "fazendo";
 
+    }
+
+    public class Identificadores
+    {
+        public string? Desenho { get; set; }
+        public string? Tensao { get; set; }
+        public string? Circuito { get; set; }
+        public string? Cabeca { get; set; }
+        public string? Suporte { get; set; }
     }
 }
