@@ -9,28 +9,49 @@
             <h2 class="text-center">Identificadores do Quadro - @Board?.Name</h2>
             <div class="cRow justify-content-center align-items-center p-0 m-0">
                 <div class="cRow justify-content-center align-items-center pr-3">
-                    <span class="oi oi-ban hoverable" @onclick='(e) => Navigation.NavigateTo($"/board/{BoardId}/{MemberId}")'></span>
-                </div>
-                 <div class="cRow justify-content-center align-items-center pr-3">
-                    <span class="oi oi-check hoverable" @onclick='(e) => SaveModified()'></span>
+                    <span class="bi bi-arrow-left-circle" @onclick=BackToBoard></span>
                 </div>
             </div>
         </div>
     </div>
-    <div class="cColumn justify-content-center align-items-center pt-4 input-group">
-        @if (Board is not null)
-        {
-            <label>Desenho</label>
-            <input class="input-group-text" @bind-value="@Board!.Identifiers!.Desenho" @bind-value:event="oninput"/>
-            <label>Tensão</label>
-            <input class="input-group-text" @bind-value="@Board!.Identifiers!.Tensao" @bind-value:event="oninput" />
-            <label>Circuito</label>
-            <input class="input-group-text" @bind-value="@Board!.Identifiers!.Circuito" @bind-value:event="oninput" />
-            <label>Cabeça</label>
-            <input class="input-group-text" @bind-value="@Board!.Identifiers!.Cabeca" @bind-value:event="oninput" />
-            <label>Suporte</label>
-            <input class="input-group-text" @bind-value="@Board!.Identifiers!.Suporte" @bind-value:event="oninput" />
-        }
+    <div class="cRow justify-content-center">
+        <div class="cColumn justify-content-center align-items-center mt-3 p-4 input-group nRaisedBackground" style="width: max-content;">
+            @if (Board is not null)
+            {
+                <div class="cColumn justify-content-center align-items-center pb-2">
+                    <label>Desenho</label>
+                    <input class="input-group-text" @bind-value="@Board!.Identifiers!.Desenho" @bind-value:event="oninput"/>
+                </div>
+                <div class="cColumn justify-content-center align-items-center pb-2">
+                    <label>Tensão</label>
+                    <input class="input-group-text" @bind-value="@Board!.Identifiers!.Tensao" @bind-value:event="oninput" />
+                    
+                </div>
+                <div class="cColumn justify-content-center align-items-center pb-2">
+                    <label>Circuito</label>
+                    <input class="input-group-text" @bind-value="@Board!.Identifiers!.Circuito" @bind-value:event="oninput" />
+                    
+                </div>
+                <div class="cColumn justify-content-center align-items-center pb-2">
+                    <label>Cabeça</label>
+                    <input class="input-group-text" @bind-value="@Board!.Identifiers!.Cabeca" @bind-value:event="oninput" />
+                    
+                </div>
+                <div class="cColumn justify-content-center align-items-center pb-2">
+                    <label>Suporte</label>
+                    <input class="input-group-text" @bind-value="@Board!.Identifiers!.Suporte" @bind-value:event="oninput" />
+                    
+                </div>
+                <div class="cRow p-2 pt-3 justify-content-around w-100">            
+                    <button class="btn nBtnDanger ml-2 mr-2" @onclick=BackToBoard>
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <button class="btn nBtnSave ml-2 mr-2" @onclick=SaveModified>
+                        <i class="bi bi-check-lg"></i>
+                    </button>
+                </div>
+            }
+        </div>
     </div>
 </div>
 
@@ -64,6 +85,9 @@
         var updateIdentifiers = Builders<TrelloBoard>.Update.Set(nameof(TrelloBoard.Identifiers), Board.Identifiers);
         var result = await DatabaseUtils.BoardsCollection(DbClient).FindOneAndUpdateAsync(boardFilter, updateIdentifiers);
         Console.WriteLine(Board!.Identifiers!.Desenho);
+        Navigation.NavigateTo($"/board/{BoardId}/{MemberId}");
+    }
+    private void BackToBoard(){
         Navigation.NavigateTo($"/board/{BoardId}/{MemberId}");
     }
 }
