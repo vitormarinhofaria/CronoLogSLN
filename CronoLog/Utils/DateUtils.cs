@@ -23,18 +23,29 @@ namespace CronoLog.Utils
 
             return $"{days}:{hours}:{minutes}";
         }
-        public static string HoursDuration(TimeSpan duration)
+        public static (string, string) DurationHoursMinutes(TimeSpan duration)
         {
             string minutes = (duration.Minutes < 10) ? $"0{duration.Minutes}" : duration.Minutes.ToString();
             int days = duration.Days * 24;
             string hours = (duration.Hours + days < 10) ? $"0{duration.Hours + days}" : $"{duration.Hours + days}";
+            return (hours, minutes);
+        }
+        public static string DurationHoursMinutesStringH(TimeSpan duration)
+        {
+            var (hours, minutes) = DurationHoursMinutes(duration);
             return $"{hours}h {minutes}m";
+        }
+        public static string HoursDuration(TimeSpan duration)
+        {
+            var (hours, minutes) = DurationHoursMinutes(duration);
+            return $"{hours}:{minutes}:00";
         }
         public static DateTime ToBrSpTimezone(DateTime input)
         {
-            if (input.Kind == DateTimeKind.Utc){
+            if (input.Kind == DateTimeKind.Utc)
+            {
                 var output = TimeZoneInfo.ConvertTimeFromUtc(input, GetBrSpTimezone());
-                return  output;
+                return output;
             }
             else
                 return input;

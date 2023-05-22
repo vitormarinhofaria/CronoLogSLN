@@ -32,7 +32,7 @@
             var duration = end - timer.Start;
             Duration += duration;
         }
-        TotalTime = DateUtils.HoursDuration(Duration);
+        TotalTime = DateUtils.DurationHoursMinutesStringH(Duration);
         await base.OnInitializedAsync();
     }
 }

@@ -266,19 +266,29 @@ namespace CronoLog.Controllers
             workbook.CurrentWorksheet.SetColumnWidth(1, 18);
             workbook.CurrentWorksheet.SetColumnWidth(2, 12);
             workbook.CurrentWorksheet.SetColumnWidth(3, 65);
-            workbook.CurrentWorksheet.SetColumnWidth(4, 30);
+            workbook.CurrentWorksheet.SetColumnWidth(4, 18);
             workbook.CurrentWorksheet.SetColumnWidth(5, 12);
             workbook.CurrentWorksheet.SetColumnWidth(6, 12);
-            workbook.CurrentWorksheet.SetColumnWidth(7, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(7, 22);
+            workbook.CurrentWorksheet.SetColumnWidth(8, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(9, 30);
+            workbook.CurrentWorksheet.SetColumnWidth(10, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(11, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(12, 12);
 
             workbook.CurrentWorksheet.AddCell("OS", 0, 0);
             workbook.CurrentWorksheet.AddCell("Nome Estrutura", 1, 0);
             workbook.CurrentWorksheet.AddCell("Serviço", 2, 0);
             workbook.CurrentWorksheet.AddCell("Cartão", 3, 0);
-            workbook.CurrentWorksheet.AddCell("Membro", 4, 0);
-            workbook.CurrentWorksheet.AddCell("Inicio", 5, 0);
-            workbook.CurrentWorksheet.AddCell("Finalização", 6, 0);
-            workbook.CurrentWorksheet.AddCell("Total (h:m)", 7, 0);
+            workbook.CurrentWorksheet.AddCell("Tipo de Desenho", 4, 0);
+            workbook.CurrentWorksheet.AddCell("Tensão", 5, 0);
+            workbook.CurrentWorksheet.AddCell("Circuito", 6, 0);
+            workbook.CurrentWorksheet.AddCell("Cabeça", 7, 0);
+            workbook.CurrentWorksheet.AddCell("Suporte", 8, 0);
+            workbook.CurrentWorksheet.AddCell("Membro", 9, 0);
+            workbook.CurrentWorksheet.AddCell("Inicio", 10, 0);
+            workbook.CurrentWorksheet.AddCell("Finalização", 11, 0);
+            workbook.CurrentWorksheet.AddCell("Total (h:m:s)", 12, 0);
             var boardHeadStyle = new Style();
             boardHeadStyle.CurrentFont.Bold = true;
             boardHeadStyle.CurrentFont.Size = 11;
@@ -286,7 +296,7 @@ namespace CronoLog.Controllers
             boardHeadStyle.CurrentCellXf.HorizontalAlign = CellXf.HorizontalAlignValue.center;
             boardHeadStyle.Append(BasicStyles.ColorizedBackground("A6A6A6"));
             boardHeadStyle.Append(BasicStyles.BorderFrame);
-            workbook.CurrentWorksheet.SetStyle("A1:H1", boardHeadStyle);
+            workbook.CurrentWorksheet.SetStyle("A1:M1", boardHeadStyle);
 
             int currentCellNumber = 1;
             foreach (var board in boardsList)
@@ -390,6 +400,14 @@ namespace CronoLog.Controllers
                         workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardService, 2, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
+                        if(board.Identifiers is not null)
+                        {
+                            workbook.CurrentWorksheet.AddCell(board.Identifiers.Desenho, 4, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(board.Identifiers.Tensao, 5, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(board.Identifiers.Circuito, 6, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(board.Identifiers.Cabeca, 7, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(board.Identifiers.Suporte, 8, currentCellNumber);
+                        }
                         var mTimers = card.Timers.FindAll((timer) => timer.StartMember.Id == member.Value.Id);
 
                         if (mTimers.Count > 0)
@@ -402,19 +420,19 @@ namespace CronoLog.Controllers
                             var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
 #endif
 
-                            workbook.CurrentWorksheet.AddCell(member.Value.Name, 4, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(member.Value.Name, 9, currentCellNumber);
                             mTimers.Sort((prev, next) => prev.Start.CompareTo(next.Start));
-                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), 5, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), 10, currentCellNumber);
                             if (mTimers.LastOrDefault().State == TimeState.STOPPED)
                             {
-                                workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), 6, currentCellNumber);
+                                workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), 11, currentCellNumber);
                             }
                             else
                             {
-                                workbook.CurrentWorksheet.AddCell("", 6, currentCellNumber);
+                                workbook.CurrentWorksheet.AddCell("", 11, currentCellNumber);
                             }
                             TimeSpan total = SumTimers(mTimers);
-                            workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), 7, currentCellNumber);
+                            workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), 12, currentCellNumber);
 
                             if (memberIndex < cardMembers.Count - 1)
                             {
@@ -438,7 +456,7 @@ namespace CronoLog.Controllers
             itemsStyle.CurrentBorder.TopColor = "000000";
             itemsStyle.CurrentBorder.RightColor = "000000";
             itemsStyle.CurrentBorder.LeftColor = "000000";
-            workbook.CurrentWorksheet.SetStyle($"A2:H{currentCellNumber}", itemsStyle);
+            workbook.CurrentWorksheet.SetStyle($"A2:M{currentCellNumber}", itemsStyle);
             workbook.Save();
             GC.Collect();
         }

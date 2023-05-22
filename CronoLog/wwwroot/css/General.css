@@ -1,4 +1,9 @@
-﻿.intervalCard {
+﻿:root {
+    --main_red_color: #ac1a1a;
+    --main_background_color: #303030;
+}
+
+.intervalCard {
     width: min-content;
     margin: 0;
     padding: 0;
@@ -48,7 +53,7 @@
 }
 
 .redContainer {
-    background-color: #ac1a1a;
+    background-color:var(--main_red_color);
     color: #E2E2E2;
 }
 
@@ -60,6 +65,21 @@
 
 .wrap {
     flex-wrap: wrap;
+}
+
+.nRaisedBackground {
+    /* display: flex; */
+    min-height: 220px;
+    width: 410px;
+    margin: 20px;
+    padding: 0px;
+    box-shadow: 0px 0px 15px #151515;
+    transition: linear 200ms;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: #585858;
+    transition: linear 120ms;
 }
 
 .nCard {
