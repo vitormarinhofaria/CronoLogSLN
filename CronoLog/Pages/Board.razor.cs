@@ -4,6 +4,7 @@ using CronoLog.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,6 +65,7 @@ namespace CronoLog.Pages
         {
             var boardFilter = Builders<TrelloBoard>.Filter.Eq("Id", BoardId);
             var board = await DatabaseUtils.BoardsCollection(DbClient).Find(boardFilter).FirstOrDefaultAsync();
+            Console.WriteLine($"board identifiers: {board.Identifiers?.Desenho}");
             BoardData = new FullBoardData
             {
                 BoardId = board.Id,
