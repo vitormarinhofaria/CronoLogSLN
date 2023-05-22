@@ -28,7 +28,7 @@ namespace CronoLog.Utils
             string minutes = (duration.Minutes < 10) ? $"0{duration.Minutes}" : duration.Minutes.ToString();
             int days = duration.Days * 24;
             string hours = (duration.Hours + days < 10) ? $"0{duration.Hours + days}" : $"{duration.Hours + days}";
-            return $"{hours}h {minutes}m";
+            return $"{hours}:{minutes}:00";
         }
         public static DateTime ToBrSpTimezone(DateTime input)
         {
