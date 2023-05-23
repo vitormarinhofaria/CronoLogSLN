@@ -221,7 +221,7 @@ namespace CronoLog.Controllers
                 FirstPage(cards, wbName, workbook);
                 workbook.AddWorksheet("Detalhes");
                 workbook.SetCurrentWorksheet("Detalhes");
-                SecondPage(cards, board.Members, wbName, workbook);
+                SecondPage(cards, board.Members, wbName, workbook, board);
 
                 workbook.Save();
             }
@@ -400,7 +400,7 @@ namespace CronoLog.Controllers
                         workbook.CurrentWorksheet.AddCell(boardName, 1, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardService, 2, currentCellNumber);
                         workbook.CurrentWorksheet.AddCell(cardName.Trim(), 3, currentCellNumber);
-                        if(board.Identifiers is not null)
+                        if (board.Identifiers is not null)
                         {
                             workbook.CurrentWorksheet.AddCell(board.Identifiers.Desenho, 4, currentCellNumber);
                             workbook.CurrentWorksheet.AddCell(board.Identifiers.Tensao, 5, currentCellNumber);
@@ -497,7 +497,7 @@ namespace CronoLog.Controllers
                 FirstPage(cards, wbName, workbook);
                 workbook.AddWorksheet("Detalhes");
                 workbook.SetCurrentWorksheet("Detalhes");
-                SecondPage(cards, board.Members, wbName, workbook);
+                SecondPage(cards, board.Members, wbName, workbook, board);
 
                 workbook.Save();
             }
@@ -517,16 +517,23 @@ namespace CronoLog.Controllers
             });
         }
 
-        private static void SecondPage(List<TrelloCard> cards, List<TrelloMember> members, string wbName, Workbook workbook)
+        private static void SecondPage(List<TrelloCard> cards, List<TrelloMember> members, string wbName, Workbook workbook, TrelloBoard board)
         {
             workbook.CurrentWorksheet.SetColumnWidth(0, 12);
             workbook.CurrentWorksheet.SetColumnWidth(1, 65);
             workbook.CurrentWorksheet.SetColumnWidth(2, 30);
-            workbook.CurrentWorksheet.SetColumnWidth(3, 12);
+
+            workbook.CurrentWorksheet.SetColumnWidth(3, 18);
             workbook.CurrentWorksheet.SetColumnWidth(4, 12);
             workbook.CurrentWorksheet.SetColumnWidth(5, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(6, 22);
+            workbook.CurrentWorksheet.SetColumnWidth(7, 12);
 
-            WorksheetHeader(wbName, workbook, 6);
+            workbook.CurrentWorksheet.SetColumnWidth(8, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(9, 12);
+            workbook.CurrentWorksheet.SetColumnWidth(10, 12);
+
+            WorksheetHeader(wbName, workbook, 11);
 
             var boardHeadStyle = new Style();
             boardHeadStyle.CurrentFont.Bold = true;
@@ -539,12 +546,19 @@ namespace CronoLog.Controllers
             workbook.CurrentWorksheet.MergeCells("A4:E4");
             workbook.CurrentWorksheet.AddCell("Serviço", "A5");
             workbook.CurrentWorksheet.AddCell("Cartão", "B5");
-            workbook.CurrentWorksheet.AddCell("Membro", "C5");
-            workbook.CurrentWorksheet.AddCell("Inicio", "D5");
-            workbook.CurrentWorksheet.AddCell("Finalização", "E5");
-            workbook.CurrentWorksheet.AddCell("Total (h:m)", "F5");
 
-            workbook.CurrentWorksheet.SetStyle("A4:F5", boardHeadStyle);
+            workbook.CurrentWorksheet.AddCell("Tipo de Desenho", "C5");
+            workbook.CurrentWorksheet.AddCell("Tensão", "D5");
+            workbook.CurrentWorksheet.AddCell("Circuito", "E5");
+            workbook.CurrentWorksheet.AddCell("Cabeça", "F5");
+            workbook.CurrentWorksheet.AddCell("Suporte", "G5");
+
+            workbook.CurrentWorksheet.AddCell("Membro", "H5");
+            workbook.CurrentWorksheet.AddCell("Inicio", "I5");
+            workbook.CurrentWorksheet.AddCell("Finalização", "J5");
+            workbook.CurrentWorksheet.AddCell("Total (h:m)", "K5");
+
+            workbook.CurrentWorksheet.SetStyle("A4:K5", boardHeadStyle);
             int currentCellNumber = 6;
             SortCards(cards);
 
@@ -560,6 +574,15 @@ namespace CronoLog.Controllers
 
                 workbook.CurrentWorksheet.AddCell(cardService, $"A{currentCellNumber}");
                 workbook.CurrentWorksheet.AddCell(cardName.Trim(), $"B{currentCellNumber}");
+
+                if(board.Identifiers is not null){
+                    var identifiers = board.Identifiers!;
+                    workbook.CurrentWorksheet.AddCell(identifiers.Desenho, $"C{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(identifiers.Tensao, $"D{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(identifiers.Circuito, $"E{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(identifiers.Cabeca, $"F{currentCellNumber}");
+                    workbook.CurrentWorksheet.AddCell(identifiers.Suporte, $"G{currentCellNumber}");
+                }
 
                 var cardMembers = new Dictionary<string, TrelloMember>();
                 foreach (var timer in card.Timers)
@@ -582,18 +605,18 @@ namespace CronoLog.Controllers
                         var lastTimer = TimeZoneInfo.ConvertTimeFromUtc(mTimers.LastOrDefault().End, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"));
 #endif
 
-                        workbook.CurrentWorksheet.AddCell(member.Value.Name, $"C{currentCellNumber}");
-                        workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), $"D{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(member.Value.Name, $"H{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(GetBrTimeStr(firstTimer), $"I{currentCellNumber}");
                         if (mTimers.LastOrDefault().State == TimeState.STOPPED)
                         {
-                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), $"E{currentCellNumber}");
+                            workbook.CurrentWorksheet.AddCell(GetBrTimeStr(lastTimer), $"J{currentCellNumber}");
                         }
                         else
                         {
-                            workbook.CurrentWorksheet.AddCell("", $"E{currentCellNumber}");
+                            workbook.CurrentWorksheet.AddCell("", $"J{currentCellNumber}");
                         }
                         TimeSpan total = SumTimers(mTimers);
-                        workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), $"F{currentCellNumber}");
+                        workbook.CurrentWorksheet.AddCell(DateUtils.HoursDuration(total), $"K{currentCellNumber}");
 
                         if (memberIndex < cardMembers.Count - 1)
                         {
@@ -618,7 +641,7 @@ namespace CronoLog.Controllers
             itemsStyle.CurrentBorder.TopColor = "000000";
             itemsStyle.CurrentBorder.RightColor = "000000";
             itemsStyle.CurrentBorder.LeftColor = "000000";
-            workbook.CurrentWorksheet.SetStyle($"A6:F{currentCellNumber}", itemsStyle);
+            workbook.CurrentWorksheet.SetStyle($"A6:K{currentCellNumber}", itemsStyle);
 
         }
         private static void FirstPage(List<TrelloCard> cards, string wbName, Workbook workbook)
@@ -713,8 +736,8 @@ namespace CronoLog.Controllers
                 new KeyValuePair<string, int>("[conferência]", 4),
                 new KeyValuePair<string, int>("[conferencia]", 4),
             };
-            
-            foreach(var card in cards)
+
+            foreach (var card in cards)
             {
                 SortCardTimers(card);
             }
